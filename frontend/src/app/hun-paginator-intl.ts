@@ -28,7 +28,7 @@ const hunRangeLabel = (page: number, pageSize: number, length: number) => {
       break;
   }
   if (length == 0 || pageSize == 0) {
-    return `0 of ${length}`;
+    return `0 / ${length}`;
   }
 
   length = Math.max(length, 0);
@@ -41,7 +41,7 @@ const hunRangeLabel = (page: number, pageSize: number, length: number) => {
       ? Math.min(startIndex + pageSize, length)
       : startIndex + pageSize;
 
-  return `${startIndex + 1} - ${endIndex} of ${length}`;
+  return `${startIndex + 1} - ${endIndex} / ${length}`;
 };
 
 export function getHunPaginatorIntl() {
