@@ -1,0 +1,6 @@
+<input
+  type="checkbox"
+  id="switch"
+  [(ngModel)]="isChecked"
+  (click)="changed.emit(!isChecked)"
+/><label for="switch">Toggle</label>

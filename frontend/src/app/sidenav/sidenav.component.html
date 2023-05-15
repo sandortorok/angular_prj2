@@ -1,0 +1,77 @@
+<mat-toolbar class="mat-elevation-z8">
+  <button
+    mat-icon-button
+    *ngIf="sidenav.mode === 'over'"
+    (click)="sidenav.toggle()"
+  >
+    <mat-icon *ngIf="!sidenav.opened"> menu </mat-icon>
+    <mat-icon *ngIf="sidenav.opened"> close </mat-icon>
+  </button>
+  <h2>AMMÓNIA ÉRZÉKELÉS</h2>
+</mat-toolbar>
+
+<mat-sidenav-container>
+  <mat-sidenav #sidenav="matSidenav" class="mat-elevation-z8">
+    <div style="transform: scale(75%)">
+      <app-kw-stop-icon></app-kw-stop-icon>
+    </div>
+    <!-- <img
+      class="avatar mat-elevation-z8"
+      src="assets/kwstop-logo-cropped2.png"
+    /> -->
+
+    <h4 class="name">KW-STOP Kft.</h4>
+    <!-- <p class="designation">Software Engineer</p> -->
+
+    <mat-divider *ngIf="loggedIn"></mat-divider>
+
+    <button
+      *ngIf="loggedIn"
+      mat-button
+      class="menu-button"
+      routerLink="/sensors"
+    >
+      <mat-icon>wifi_tethering</mat-icon>
+      <span>Szenzorok</span>
+    </button>
+    <button
+      *ngIf="loggedIn"
+      mat-button
+      class="menu-button"
+      routerLink="/sirens"
+    >
+      <mat-icon>notifications_none</mat-icon>
+      <span>Kürtök</span>
+    </button>
+    <button *ngIf="loggedIn" mat-button class="menu-button" routerLink="/cans">
+      <mat-icon>live_tv</mat-icon>
+      <span>Élő Can Címek</span>
+    </button>
+    <button *ngIf="loggedIn" mat-button class="menu-button" routerLink="/alarm">
+      <mat-icon>alarm</mat-icon>
+      <span>Riasztások</span>
+    </button>
+    <button
+      *ngIf="isAdmin"
+      mat-button
+      class="menu-button"
+      routerLink="/settings"
+    >
+      <mat-icon>settings</mat-icon>
+      <span>Beállítások</span>
+    </button>
+
+    <mat-divider></mat-divider>
+
+    <button mat-button class="menu-button" routerLink="/login">
+      <mat-icon>key</mat-icon>
+      <span *ngIf="!loggedIn">Bejelentkezés</span>
+      <span *ngIf="loggedIn">Bejelentkezve</span>
+    </button>
+  </mat-sidenav>
+  <mat-sidenav-content>
+    <div class="content mat-elevation-z8">
+      <ng-content></ng-content>
+    </div>
+  </mat-sidenav-content>
+</mat-sidenav-container>

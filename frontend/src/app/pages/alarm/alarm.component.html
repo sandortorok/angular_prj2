@@ -1,0 +1,35 @@
+<h1>Hibaüzenetek</h1>
+<div
+  style="
+    display: block;
+    min-height: 100px;
+    border-radius: 25px;
+    border: 2px solid white;
+    margin-bottom: 30px;
+  "
+  *ngIf="items.length > 0"
+>
+  <ul style="margin: 1rem 0">
+    <li *ngFor="let item of activePageDataChunk" style="margin-bottom: 10px">
+      <div style="display: grid; grid-template-columns: 20% 50%">
+        <span style="font-weight: bold">
+          {{ item.message }}
+        </span>
+        <span>
+          {{ item.timestamp.toLocaleString("hu") }}
+        </span>
+      </div>
+    </li>
+  </ul>
+</div>
+<div *ngIf="items.length === 0">
+  <h3>Nincs hibaüzenet</h3>
+</div>
+<mat-paginator
+  [length]="items.length"
+  [pageSize]="pageSize"
+  [showFirstLastButtons]="true"
+  [pageSizeOptions]="pageSizeOptions"
+  (page)="onPageChanged($event)"
+>
+</mat-paginator>

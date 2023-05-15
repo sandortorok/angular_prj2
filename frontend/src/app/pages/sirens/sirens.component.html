@@ -1,0 +1,54 @@
+<h1>Kürtök</h1>
+<mat-button-toggle-group [multiple]="true">
+  <mat-button-toggle
+    [value]="siren.name"
+    [checked]="siren.muted"
+    (change)="changeSiren($event, siren)"
+    *ngFor="let siren of sirens"
+  >
+    {{ siren.name }}
+
+    <mat-icon *ngIf="siren.muted">notifications_off</mat-icon>
+    <mat-icon *ngIf="!siren.muted && siren.isOn" [@swing]="animationState"
+      >notifications_active</mat-icon
+    >
+    <mat-icon *ngIf="!siren.muted && !siren.isOn">notifications_none</mat-icon>
+  </mat-button-toggle>
+</mat-button-toggle-group>
+
+<div
+  style="
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    margin-top: 100px;
+  "
+>
+  <h2 style="margin: 0">Teszt mód</h2>
+  <app-toggle-button
+    style="margin: 0; padding: 0"
+    [isChecked]="isTest"
+    (changed)="testModeChanged($event)"
+  ></app-toggle-button>
+</div>
+<ng-container *ngIf="isTest">
+  <div *ngFor="let siren of sirens">
+    <h4>{{ siren.name }}</h4>
+    <mat-button-toggle-group
+      [(ngModel)]="siren.isOn"
+      [value]="1"
+      aria-label="Font Style"
+      (change)="testSirenChanged($event, siren)"
+    >
+      <mat-button-toggle [value]="0" [class.green]="!siren.isOn"
+        >Kikapcsolás</mat-button-toggle
+      >
+      <mat-button-toggle [value]="1" [class.red]="siren.isOn"
+        >Bekapcsolás</mat-button-toggle
+      >
+    </mat-button-toggle-group>
+  </div>
+</ng-container>

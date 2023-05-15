@@ -1,0 +1,25 @@
+<h1 mat-dialog-title>Szenzor módosítása</h1>
+
+<div mat-dialog-content style="width: 500px">
+  <div class="formElement">
+    <h4>Törölni kívánt szenzor</h4>
+    <mat-form-field appearance="fill">
+      <mat-label>Név</mat-label>
+      <mat-select [(value)]="selectedSensor">
+        <mat-option *ngFor="let sensor of sensors" [value]="sensor">
+          {{ sensor.name }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+</div>
+<mat-error style="text-align: center" *ngIf="errorMessage">{{
+  errorMessage
+}}</mat-error>
+<div mat-dialog-actions style="display: flex; gap: 30px; margin: 20px 40px">
+  <button mat-raised-button (click)="submit()" color="warn">
+    <span *ngIf="!submitted">TÖRLÉS</span>
+    <mat-spinner *ngIf="submitted" diameter="20"></mat-spinner>
+  </button>
+  <button mat-raised-button mat-dialog-close cdkFocusInitial>Bezárás</button>
+</div>

@@ -1,0 +1,45 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Sensor {
+  id    Int     @default(autoincrement()) @id
+  name  String @unique()
+  address Int @unique()
+  horn Boolean @default(false)
+  history SensorHistory[]
+}
+
+model SensorHistory {
+  id        Int      @default(autoincrement()) @id
+  timestamp DateTime
+  value Float
+  sensor Sensor @relation(fields: [sensorId],references: [id])
+  sensorId Int
+}
+
+model Siren {
+  id Int @default(autoincrement()) @id
+  name String @unique()
+  address Int @default(0)
+  on Boolean @default(false)
+  muted Boolean @default(false)
+}
+
+model ErrorMessage{
+  id Int @default(autoincrement()) @id
+  message String
+  timestamp DateTime @default(now())
+}
+model Tesztmode {
+  id Int @default(1) @id
+  isOn Boolean
+}

@@ -1,0 +1,24 @@
+<h1 style="margin-bottom: 40px">Élő Can címek</h1>
+<div
+  style="display: flex; gap: 30px; flex-wrap: warp"
+  *ngIf="addresses.length > 0"
+>
+  <mat-card
+    style="
+      width: 130px;
+      min-height: 80px;
+      align-items: center;
+      justify-content: center;
+    "
+    *ngFor="let address of addresses"
+  >
+    <mat-card-title
+      style="font-weight: bold; text-align: center; justify-content: center"
+    >
+      Can cím: {{ address }}
+    </mat-card-title>
+  </mat-card>
+</div>
+<div *ngIf="addresses.length === 0">
+  <p>Nincs élő can cím</p>
+</div>

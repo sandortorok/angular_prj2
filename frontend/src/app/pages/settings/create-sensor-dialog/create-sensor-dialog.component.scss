@@ -1,0 +1,6 @@
+.formElement {
+  margin: 0 20px;
+  & mat-form-field {
+    width: 100%;
+  }
+}

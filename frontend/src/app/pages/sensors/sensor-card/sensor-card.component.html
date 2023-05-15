@@ -1,0 +1,66 @@
+<mat-card style="width: 380px; max-height: 400px; min-height: 250px">
+  <mat-card-header>
+    <button mat-fab color="primary" class="bellIcon" (click)="changeHorn()">
+      <mat-icon>{{ sensor.horn ? "volume_up" : "volume_off" }}</mat-icon>
+    </button>
+    <mat-card-title style="font-weight: bold">{{ sensor.name }}</mat-card-title>
+    <mat-card-subtitle>
+      <span>Can cím: ({{ sensor.address }})</span></mat-card-subtitle
+    >
+  </mat-card-header>
+  <mat-card-content>
+    <p *ngIf="value !== undefined">{{ value }} ppm</p>
+    <p *ngIf="value === undefined">...</p>
+    <mat-divider></mat-divider>
+  </mat-card-content>
+  <mat-card-actions>
+    <div
+      style="
+        height: 50px;
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        text-align: center;
+        align-items: center;
+        margin: 20px auto;
+      "
+    >
+      <button
+        mat-fab
+        *ngIf="sensor.value"
+        disabled
+        class="valueIcon"
+        [class.warn]="sensor.value && sensor.value >= 30 && sensor.value < 70"
+        [class.critical]="sensor.value && sensor.value >= 70"
+      >
+        <mat-icon *ngIf="sensor.value && sensor.value < 30">check</mat-icon>
+        <mat-icon
+          *ngIf="sensor.value && sensor.value >= 30 && sensor.value < 70"
+        >
+          warning
+        </mat-icon>
+        <mat-icon *ngIf="sensor.value && sensor.value >= 70">error</mat-icon>
+      </button>
+      <span *ngIf="sensor.value === undefined"> Nincs érték </span>
+      <span class="valueText" *ngIf="sensor.value && sensor.value < 30">
+        Megfelelő ammónia koncentráció
+      </span>
+      <span
+        class="warn"
+        *ngIf="sensor.value && sensor.value >= 30 && sensor.value < 70"
+      >
+        Nem megfelelő ammónia koncentráció
+      </span>
+      <span class="critical" *ngIf="sensor.value && sensor.value >= 70">
+        Kritikus ammónia koncentráció
+      </span>
+    </div>
+  </mat-card-actions>
+  <mat-card-footer style="margin: 0 auto; margin-bottom: 20px">
+    <div style="display: flex; align-items: center; justify-content: center">
+      <button mat-raised-button (click)="openDialog()" color="primary">
+        Diagram
+      </button>
+    </div>
+  </mat-card-footer>
+</mat-card>

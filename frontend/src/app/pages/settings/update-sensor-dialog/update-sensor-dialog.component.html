@@ -1,0 +1,79 @@
+<h1 mat-dialog-title>Szenzor módosítása</h1>
+
+<div mat-dialog-content style="width: 500px">
+  <form
+    style="display: flex; flex-direction: column"
+    [formGroup]="form"
+    (ngSubmit)="submit()"
+  >
+    <div class="formElement">
+      <h4>Módosítandó szenzor</h4>
+      <mat-form-field appearance="fill">
+        <mat-label>Név</mat-label>
+        <mat-select (valueChange)="newSelected($event)">
+          <mat-option *ngFor="let sensor of sensors" [value]="sensor.name">
+            {{ sensor.name }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <div class="formElement" *ngIf="selectedSensor">
+      <h3>Új név</h3>
+      <mat-form-field>
+        <mat-label name="name">Név</mat-label>
+        <input
+          name="newName"
+          matInput
+          formControlName="newName"
+          required
+          [(ngModel)]="selectedSensor.name"
+        />
+        <mat-error *ngIf="newName.invalid && newName.hasError('required')">
+          Adjon meg egy nevet!
+        </mat-error>
+        <mat-error *ngIf="newName.invalid && newName.hasError('minlength')">
+          A név legalább 6 karakter legyen
+        </mat-error>
+      </mat-form-field>
+    </div>
+    <div class="formElement" *ngIf="selectedSensor">
+      <h3>Új cím (0-255)</h3>
+      <mat-form-field>
+        <mat-label>Cím</mat-label>
+        <input
+          name="newAddress"
+          type="number"
+          matInput
+          only-number
+          formControlName="newAddress"
+          [(ngModel)]="selectedSensor.address"
+          required
+        />
+        <mat-error
+          *ngIf="newAddress.invalid && newAddress.hasError('required')"
+        >
+          Adjon meg egy számot!
+        </mat-error>
+        <mat-error *ngIf="newAddress.invalid && newAddress.hasError('taken')">
+          A megadott cím már foglalt!
+        </mat-error>
+        <mat-error *ngIf="newAddress.invalid && newAddress.hasError('min')"
+          >Adjon meg egy 0-nál nagyobb számot!
+        </mat-error>
+        <mat-error *ngIf="newAddress.invalid && newAddress.hasError('max')">
+          Adjon meg egy 255-nél kisebb számot!
+        </mat-error>
+      </mat-form-field>
+    </div>
+  </form>
+</div>
+<mat-error style="text-align: center" *ngIf="errorMessage">{{
+  errorMessage
+}}</mat-error>
+<div mat-dialog-actions style="display: flex; gap: 30px; margin: 20px 40px">
+  <button mat-raised-button cdkFocusInitial (click)="submit()">
+    <span *ngIf="!submitted">OK</span>
+    <mat-spinner *ngIf="submitted" diameter="20"></mat-spinner>
+  </button>
+  <button mat-raised-button mat-dialog-close>Bezárás</button>
+</div>
