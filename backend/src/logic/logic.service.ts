@@ -1,3 +1,4 @@
+import { ErrorMessageService } from './../error-message/error-message.service';
 import { Siren } from '@prisma/client';
 import { TestModeService } from './../test-mode/test-mode.service';
 import { Injectable, OnModuleInit } from '@nestjs/common';
@@ -14,6 +15,7 @@ export class LogicService implements OnModuleInit {
     private wsService: WebsocketService,
     private testModeService: TestModeService,
     private sirenService: SirenService,
+    private errorService: ErrorMessageService,
   ) {}
 
   latestValues: sensorType = {} as sensorType;
@@ -73,7 +75,7 @@ export class LogicService implements OnModuleInit {
     this.dataMessage$.subscribe((data) => {
       this.aliveCanAddresses[`${data.newCan}`] = new Date();
       this.latestValues[`${data.sensorId}`] = data.value;
-      this.wsService.sendMessage({
+      this.wsService.sendAmmoniaValue({
         sensorAddress: data.sensorId,
         value: data.value,
       });
@@ -83,18 +85,29 @@ export class LogicService implements OnModuleInit {
 
   async sirenCheck() {
     const sirens = this.sirenSubject.getValue();
-
-    if (this.testModeSubject.getValue()) {
+    const isTestMode = this.testModeSubject.getValue();
+    if (isTestMode) {
       // if in test mode
     } else {
       let turnOn = false;
       Object.values(this.latestValues).forEach((value) => {
-        if (value > 40) {
+        if (value > 20) {
           turnOn = true;
         }
       });
       for (const siren of sirens) {
         if (turnOn) {
+          if (siren.on === false && !isTestMode) {
+            const msg = siren.name + ': Magas ammónia érték';
+            this.errorService.addErrorMessage({
+              timestamp: new Date(),
+              message: msg,
+            });
+            this.wsService.sendErrorMessage({
+              message: msg,
+              timestamp: new Date(),
+            });
+          }
           siren.on = true;
           await this.updateSiren(siren);
         } else {

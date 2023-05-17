@@ -34,7 +34,7 @@ export class SensorService {
   alarmCheck() {
     let playSound = false;
     this.sensors.getValue().forEach((s) => {
-      if (s.value && s.value > 40 && s.horn != false) {
+      if (s.value && s.value > 20 && s.horn != false) {
         playSound = true;
       }
     });

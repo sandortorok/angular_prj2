@@ -56,11 +56,11 @@ export class GaugeChartComponent implements OnInit {
 
       data: {
         // values on X-Axis
-        labels: ['OK', 'Elégséges', 'Baj van!'],
+        labels: ['OK', 'Elégséges', 'Kritikus'],
         datasets: [
           {
             label: 'Határérték',
-            data: [30, 40, 30],
+            data: [20, 30, 50],
             backgroundColor: [
               'rgba(0,255,0,0.3)',
               'rgba(255,255,0,0.3)',

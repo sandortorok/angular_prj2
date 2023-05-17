@@ -11,7 +11,10 @@ export class WebsocketService {
     sensorAddress: number;
     value: number;
   }> = new BehaviorSubject({ sensorAddress: 0, value: 0 });
+  public errorMessage$: BehaviorSubject<{ timestamp: Date; message: string }> =
+    new BehaviorSubject({ timestamp: new Date(), message: '' });
 
+  incomingMessages = this.errorMessage$.asObservable();
   public sirenChange$: BehaviorSubject<{
     sirenName: string;
     isOn: boolean;
@@ -49,6 +52,12 @@ export class WebsocketService {
     this.socket.on('canAddresses', (message: Array<string>) => {
       this.canAddressChange$.next(message);
     });
+    this.socket.on(
+      'errorMessage',
+      (message: { timestamp: Date; message: string }) => {
+        this.errorMessage$.next(message);
+      }
+    );
     this.socket.on(
       'sirenChange',
       (message: { sirenName: string; isOn: boolean }) => {
