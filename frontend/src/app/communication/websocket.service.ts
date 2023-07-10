@@ -7,10 +7,14 @@ import { environment } from 'src/environments/environment';
   providedIn: 'root',
 })
 export class WebsocketService {
+  private wsConnected: BehaviorSubject<boolean> = new BehaviorSubject(false);
+  wsConnectionChange$ = this.wsConnected.asObservable();
+
   public sensorChange$: BehaviorSubject<{
+    raw: number;
     sensorAddress: number;
     value: number;
-  }> = new BehaviorSubject({ sensorAddress: 0, value: 0 });
+  }> = new BehaviorSubject({ sensorAddress: 0, value: 0, raw: 0 });
   public errorMessage$: BehaviorSubject<{ timestamp: Date; message: string }> =
     new BehaviorSubject({ timestamp: new Date(), message: '' });
 
@@ -39,13 +43,21 @@ export class WebsocketService {
   public testModeChange(value) {
     this.socket.emit('testModeChange', `${+value}`);
   }
+  public resetAddresses() {
+    this.socket.emit('resetAddresses', 1);
+  }
   public wsSubscribe = () => {
     this.socket.on('connect', () => {
+      this.wsConnected.next(true);
       console.log('Connected to Websockets!');
+    });
+    this.socket.on('disconnect', () => {
+      this.wsConnected.next(false);
+      console.log('Disconnected from Websockets!');
     });
     this.socket.on(
       'onMessage',
-      (message: { sensorAddress: number; value: number }) => {
+      (message: { sensorAddress: number; value: number; raw: number }) => {
         this.sensorChange$.next(message);
       }
     );

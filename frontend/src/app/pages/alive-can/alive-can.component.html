@@ -18,6 +18,7 @@
       Can cím: {{ address }}
     </mat-card-title>
   </mat-card>
+  <button mat-button (click)="reset()">Reset</button>
 </div>
 <div *ngIf="addresses.length === 0">
   <p>Nincs élő can cím</p>

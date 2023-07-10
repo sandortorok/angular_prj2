@@ -9,8 +9,13 @@
     >
   </mat-card-header>
   <mat-card-content>
-    <p *ngIf="value !== undefined">{{ value }} ppm</p>
-    <p *ngIf="value === undefined">...</p>
+    <p *ngIf="value !== undefined">
+      {{ value }} ppm
+      <span *ngIf="value !== undefined && showRaw">({{ raw }})</span>
+    </p>
+    <p *ngIf="value === undefined">
+      ... <span *ngIf="value === undefined && showRaw">(...)</span>
+    </p>
     <mat-divider></mat-divider>
   </mat-card-content>
   <mat-card-actions>

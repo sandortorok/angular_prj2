@@ -26,12 +26,23 @@
       <mat-icon> keyboard_arrow_down </mat-icon>
     </mat-button-toggle>
   </mat-button-toggle-group>
+  <button
+    mat-stroked-button
+    style="margin-left: 20px"
+    [ngClass]="showRaw ? 'clicked' : ''"
+    (click)="showRaw = !showRaw"
+  >
+    Nyers érték
+    <mat-icon>build</mat-icon>
+  </button>
 </div>
 <div style="display: flex; gap: 20px; flex-wrap: wrap">
   <app-sensor
     *ngFor="let sensor of sensors | sort : chosenAscDesc : chosenOrder"
     [sensor]="sensor"
     [value]="sensor.value"
+    [raw]="sensor.raw"
+    [showRaw]="showRaw"
     (hornChanged)="updateHorn(sensor.id!, $event)"
   ></app-sensor>
 </div>

@@ -1,4 +1,6 @@
 <!-- partial:index.partial.html -->
+<div class="circle" [ngClass]="wsAlive ? 'pulse green' : 'red'"></div>
+
 <div class="body" style="margin-bottom: 300px">
   <form *ngIf="!loggedIn" [formGroup]="authForm" (ngSubmit)="loginUser()">
     <div class="form-field">

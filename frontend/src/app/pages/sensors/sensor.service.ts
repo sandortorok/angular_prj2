@@ -25,6 +25,7 @@ export class SensorService {
       newSensors.forEach((sensor) => {
         if (sensor.address === changedSensor.sensorAddress) {
           sensor.value = changedSensor.value;
+          sensor.raw = changedSensor.raw;
         }
       });
       this.sensors.next(newSensors);

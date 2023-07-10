@@ -52,4 +52,8 @@ export class WebsocketGateway
     console.log('test changed to', boolValue);
     this.logic.testModeSubject.next(boolValue);
   }
+  @SubscribeMessage('resetAddresses')
+  async resetAddresses() {
+    this.logic.resetAddresses();
+  }
 }

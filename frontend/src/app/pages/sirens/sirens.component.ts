@@ -4,6 +4,7 @@ import { SirenService } from './siren.service';
 import { WebsocketService } from 'src/app/communication/websocket.service';
 import { Subject, takeUntil } from 'rxjs';
 import { Siren } from './siren.model';
+import { AuthService } from '../login/services/auth.service';
 
 @Component({
   selector: 'app-sirens',
@@ -14,9 +15,11 @@ import { Siren } from './siren.model';
 export class SirensComponent implements OnInit, OnDestroy {
   constructor(
     private sirenService: SirenService,
-    private wss: WebsocketService
+    private wss: WebsocketService,
+    private _auth: AuthService
   ) {}
 
+  isAdmin = false;
   isTest = false;
   private ngUnsubscribe = new Subject<void>();
   sirens: Siren[] = [];
@@ -34,6 +37,11 @@ export class SirensComponent implements OnInit, OnDestroy {
 
   animationState = false;
   ngOnInit() {
+    this._auth.adminChange$
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((adminChanged) => {
+        this.isAdmin = adminChanged;
+      });
     this.wss.testModeChange(false);
     this.sirenService.getSirens().subscribe((res) => {
       this.sirens = res;

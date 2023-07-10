@@ -50,6 +50,8 @@ import { DeleteSirenDialogComponent } from './pages/settings/delete-siren-dialog
 import { AliveCanComponent } from './pages/alive-can/alive-can.component';
 import { ToggleButtonComponent } from './shared/toggle-button/toggle-button.component';
 import { getHunPaginatorIntl } from './hun-paginator-intl';
+import { MapComponent } from './pages/map/map.component';
+import { MapSvgComponent } from './pages/map/map-svg/map-svg.component';
 
 const config: SocketIoConfig = { url: 'http://localhost:3000', options: {} };
 
@@ -95,6 +97,8 @@ const matModules = [
     SirensComponent,
     AliveCanComponent,
     ToggleButtonComponent,
+    MapComponent,
+    MapSvgComponent,
   ],
   imports: [
     BrowserModule,

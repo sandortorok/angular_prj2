@@ -25,6 +25,8 @@ export class SensorCardComponent {
     horn: false,
   };
   @Input() value: number | undefined;
+  @Input() raw: number | undefined;
+  @Input() showRaw: boolean = false;
   @Output() hornChanged = new EventEmitter<boolean>();
   changeHorn() {
     this.sensor.horn = !this.sensor.horn;

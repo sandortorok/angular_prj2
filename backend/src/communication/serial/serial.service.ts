@@ -11,6 +11,7 @@ export class SerialService {
   connectSerial(
     connectSubject: ReplaySubject<boolean>,
     dataSubject: ReplaySubject<{
+      raw: number;
       value: number;
       sensorId: number;
       newCan: number;
@@ -41,7 +42,7 @@ export class SerialService {
           const value = ppmConvert(rawValue);
           const sensorId = parseInt(fr[0], 16);
           const newCan = parseInt(fr[5], 16);
-          dataSubject.next({ value, sensorId, newCan });
+          dataSubject.next({ raw: rawValue, value, sensorId, newCan });
         });
       });
     } catch (err) {

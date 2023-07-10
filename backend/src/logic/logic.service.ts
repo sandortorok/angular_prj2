@@ -1,11 +1,12 @@
 import { ErrorMessageService } from './../error-message/error-message.service';
-import { Siren } from '@prisma/client';
+import { Sensor, Siren } from '@prisma/client';
 import { TestModeService } from './../test-mode/test-mode.service';
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { ReplaySubject, Observable, BehaviorSubject } from 'rxjs';
 import { SerialService } from 'src/communication/serial/serial.service';
 import { WebsocketService } from 'src/communication/websocket/websocket.service';
 import { SirenService } from 'src/siren/siren.service';
+import { SensorService } from 'src/sensor/sensor.service';
 
 type sensorType = { sensorId: number; value: number };
 @Injectable()
@@ -16,6 +17,7 @@ export class LogicService implements OnModuleInit {
     private testModeService: TestModeService,
     private sirenService: SirenService,
     private errorService: ErrorMessageService,
+    private sensorService: SensorService,
   ) {}
 
   latestValues: sensorType = {} as sensorType;
@@ -26,17 +28,21 @@ export class LogicService implements OnModuleInit {
   testModeUpdate$: Observable<boolean> = this.testModeSubject.asObservable();
 
   sirenSubject: BehaviorSubject<Array<Siren>> = new BehaviorSubject([]);
+  sensorSubject: BehaviorSubject<Array<Sensor>> = new BehaviorSubject([]);
+
   connectTries = 0;
   connectionSubject: ReplaySubject<boolean> = new ReplaySubject();
   connectionResponse$: Observable<boolean> =
     this.connectionSubject.asObservable();
 
   dataSubject: ReplaySubject<{
+    raw: number;
     value: number;
     sensorId: number;
     newCan: number;
   }> = new ReplaySubject();
   dataMessage$: Observable<{
+    raw: number;
     value: number;
     sensorId: number;
     newCan: number;
@@ -50,6 +56,9 @@ export class LogicService implements OnModuleInit {
       this.sirenSubject.next(res);
     });
     this.serialService.connectSerial(this.connectionSubject, this.dataSubject);
+    this.sensorService.sensors({}).then((res) => {
+      this.sensorSubject.next(res);
+    });
     this.handleConnection();
     this.handleDataIncome();
   }
@@ -76,6 +85,7 @@ export class LogicService implements OnModuleInit {
       this.aliveCanAddresses[`${data.newCan}`] = new Date();
       this.latestValues[`${data.sensorId}`] = data.value;
       this.wsService.sendAmmoniaValue({
+        raw: data.raw,
         sensorAddress: data.sensorId,
         value: data.value,
       });
@@ -126,9 +136,9 @@ export class LogicService implements OnModuleInit {
   }
   startPolling() {
     setInterval(async () => {
-      await this.serialService.pollAddresses([
-        1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,
-      ]);
+      await this.serialService.pollAddresses(
+        this.sensorSubject.getValue().map((sensor) => sensor.address),
+      );
       await this.sirenCheck();
     }, 5000);
   }
@@ -138,6 +148,13 @@ export class LogicService implements OnModuleInit {
         delete this.aliveCanAddresses[address];
       }
     });
+    this.wsService.sendAliveAddresses(Object.keys(this.aliveCanAddresses));
+  }
+  resetAddresses() {
+    Object.keys(this.aliveCanAddresses).forEach((address: string) => {
+      delete this.aliveCanAddresses[address];
+    });
+    this.wsService.sendAliveAddresses(Object.keys(this.aliveCanAddresses));
   }
   async updateSiren(siren: { name: string; muted?: boolean; on?: boolean }) {
     const sirens = this.sirenSubject.getValue();

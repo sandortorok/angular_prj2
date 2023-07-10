@@ -14,4 +14,7 @@ export class AliveCanComponent implements OnInit {
       this.addresses = addresses;
     });
   }
+  reset() {
+    this.wss.resetAddresses();
+  }
 }

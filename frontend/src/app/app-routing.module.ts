@@ -10,12 +10,14 @@ import { SirensComponent } from './pages/sirens/sirens.component';
 import { AliveCanComponent } from './pages/alive-can/alive-can.component';
 import { AuthGuard } from './pages/login/guards/auth.guard';
 import { AdminGuard } from './pages/login/guards/admin.guard';
+import { MapComponent } from './pages/map/map.component';
 
 const routes: Routes = [
   { path: 'sensors', component: SensorsComponent, canActivate: [AuthGuard] },
   { path: 'alarm', component: AlarmComponent, canActivate: [AuthGuard] },
   { path: 'sirens', component: SirensComponent, canActivate: [AuthGuard] },
   { path: 'cans', component: AliveCanComponent, canActivate: [AuthGuard] },
+  { path: 'map', component: MapComponent, canActivate: [AuthGuard] },
   { path: 'settings', component: SettingsComponent, canActivate: [AdminGuard] },
   { path: 'login', component: LoginComponent },
   { path: 'help', component: HelpComponent, canActivate: [AuthGuard] },

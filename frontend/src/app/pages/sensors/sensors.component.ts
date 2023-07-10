@@ -26,6 +26,8 @@ export class SensorsComponent implements OnInit, OnDestroy {
   ];
   chosenOrder: OrderBy = 'address';
   chosenAscDesc: AscDesc = 'asc';
+
+  showRaw = false;
   constructor(private sensorService: SensorService) {}
   ngOnDestroy(): void {
     this.ngUnsubscribe.next();

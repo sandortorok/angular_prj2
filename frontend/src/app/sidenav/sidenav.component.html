@@ -34,6 +34,10 @@
       <mat-icon>wifi_tethering</mat-icon>
       <span>Szenzorok</span>
     </button>
+    <button *ngIf="loggedIn" mat-button class="menu-button" routerLink="/map">
+      <mat-icon>place</mat-icon>
+      <span>Térkép</span>
+    </button>
     <button
       *ngIf="loggedIn"
       mat-button

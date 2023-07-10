@@ -27,8 +27,9 @@
     margin-top: 100px;
   "
 >
-  <h2 style="margin: 0">Teszt mód</h2>
+  <h2 *ngIf="isAdmin" style="margin: 0">Teszt mód</h2>
   <app-toggle-button
+    *ngIf="isAdmin"
     style="margin: 0; padding: 0"
     [isChecked]="isTest"
     (changed)="testModeChanged($event)"

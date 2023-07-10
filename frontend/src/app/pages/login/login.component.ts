@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { AuthService } from './services/auth.service';
 import { SnackService } from './services/snack.service';
 import { Subject, takeUntil } from 'rxjs';
+import { WebsocketService } from 'src/app/communication/websocket.service';
 
 @Component({
   selector: 'app-login',
@@ -16,12 +17,14 @@ export class LoginComponent implements OnInit, OnDestroy {
   message: string = '';
   authForm!: FormGroup;
   loggedIn = false;
+  wsAlive = false;
   private ngUnsubscribe = new Subject<void>();
 
   constructor(
     private _auth: AuthService,
     private _router: Router,
-    private snack: SnackService
+    private snack: SnackService,
+    private wss: WebsocketService
   ) {}
 
   ngOnInit(): void {
@@ -37,6 +40,9 @@ export class LoginComponent implements OnInit, OnDestroy {
       .subscribe((loggedInChanged) => {
         this.loggedIn = loggedInChanged;
       });
+    this.wss.wsConnectionChange$.subscribe((res) => {
+      this.wsAlive = res;
+    });
   }
 
   get username() {
