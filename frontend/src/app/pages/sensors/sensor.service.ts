@@ -1,4 +1,4 @@
-import { Sensor } from './sensor.model';
+import { Sensor, yellowMin } from './sensor.model';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { Injectable, isDevMode } from '@angular/core';
@@ -10,11 +10,10 @@ export class SensorService {
   private sensors: BehaviorSubject<Sensor[]> = new BehaviorSubject<Sensor[]>(
     []
   );
-
+  sensorChange$ = this.sensors.asObservable();
   alarmAudio = new Audio('assets/audio/alarm.wav');
   alarmRunning = false;
 
-  sensorChange$ = this.sensors.asObservable();
   private url = environment.backend_url + '/sensor';
   constructor(private http: HttpClient, private wss: WebsocketService) {
     this.getSensors().subscribe((res) => {
@@ -35,7 +34,7 @@ export class SensorService {
   alarmCheck() {
     let playSound = false;
     this.sensors.getValue().forEach((s) => {
-      if (s.value && s.value > 20 && s.horn != false) {
+      if (s.value && s.value > yellowMin && s.horn != false) {
         playSound = true;
       }
     });

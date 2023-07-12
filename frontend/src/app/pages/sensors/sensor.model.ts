@@ -6,3 +6,6 @@ export interface Sensor {
   horn: boolean;
   value?: number;
 }
+
+export const redMin: number = 70;
+export const yellowMin: number = 30;

@@ -35,28 +35,38 @@
         *ngIf="sensor.value"
         disabled
         class="valueIcon"
-        [class.warn]="sensor.value && sensor.value >= 30 && sensor.value < 70"
-        [class.critical]="sensor.value && sensor.value >= 70"
+        [class.warn]="
+          sensor.value && sensor.value >= yellowMin && sensor.value < redMin
+        "
+        [class.critical]="sensor.value && sensor.value >= redMin"
       >
-        <mat-icon *ngIf="sensor.value && sensor.value < 30">check</mat-icon>
+        <mat-icon *ngIf="sensor.value && sensor.value < yellowMin"
+          >check</mat-icon
+        >
         <mat-icon
-          *ngIf="sensor.value && sensor.value >= 30 && sensor.value < 70"
+          *ngIf="
+            sensor.value && sensor.value >= yellowMin && sensor.value < redMin
+          "
         >
           warning
         </mat-icon>
-        <mat-icon *ngIf="sensor.value && sensor.value >= 70">error</mat-icon>
+        <mat-icon *ngIf="sensor.value && sensor.value >= redMin"
+          >error</mat-icon
+        >
       </button>
       <span *ngIf="sensor.value === undefined"> Nincs érték </span>
-      <span class="valueText" *ngIf="sensor.value && sensor.value < 30">
+      <span class="valueText" *ngIf="sensor.value && sensor.value < yellowMin">
         Megfelelő ammónia koncentráció
       </span>
       <span
         class="warn"
-        *ngIf="sensor.value && sensor.value >= 30 && sensor.value < 70"
+        *ngIf="
+          sensor.value && sensor.value >= yellowMin && sensor.value < redMin
+        "
       >
         Nem megfelelő ammónia koncentráció
       </span>
-      <span class="critical" *ngIf="sensor.value && sensor.value >= 70">
+      <span class="critical" *ngIf="sensor.value && sensor.value >= redMin">
         Kritikus ammónia koncentráció
       </span>
     </div>

@@ -1,3 +1,4 @@
+import { redMin, yellowMin } from './../sensor.model';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import {
   Component,
@@ -16,6 +17,8 @@ import { SensorDialogComponent } from '../gauge-dialog/gauge-dialog.component';
   styleUrls: ['./sensor-card.component.scss'],
 })
 export class SensorCardComponent {
+  yellowMin = yellowMin;
+  redMin = redMin;
   dialogRef: MatDialogRef<SensorDialogComponent, number> | undefined;
   constructor(private dialog: MatDialog) {}
   @Input() sensor: Sensor = {

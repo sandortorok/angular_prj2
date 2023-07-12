@@ -25,11 +25,6 @@ export class AuthService {
 
       return true;
     }
-    if (name === '' && password === '') {
-      this.loggedIn.next(true);
-      this.isAdmin.next(false);
-      return true;
-    }
     this.loggedIn.next(false);
     this.isAdmin.next(false);
     return false;
