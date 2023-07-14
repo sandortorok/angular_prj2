@@ -12,7 +12,7 @@ export class MapSvgComponent {
   ngOnChanges(changes: SimpleChanges) {
     let cur = changes['sensors'].currentValue;
     cur.forEach((sensor: Sensor) => {
-      let color = 'red';
+      let color = 'gray';
       if (sensor.value && sensor.value < yellowMin) {
         color = 'green';
       } else if (
