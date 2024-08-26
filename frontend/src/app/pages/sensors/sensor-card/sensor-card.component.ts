@@ -26,6 +26,7 @@ export class SensorCardComponent {
     name: '',
     address: 0,
     horn: false,
+    panelId: 0,
   };
   @Input() value: number | undefined;
   @Input() raw: number | undefined;
@@ -43,7 +44,9 @@ export class SensorCardComponent {
       this.dialogRef = undefined;
     });
   }
-
+  getBorderColorClass() {
+    return `border${this.sensor.panelId}`;
+  }
   ngOnChanges(changes: SimpleChanges) {
     if (this.dialogRef && this.dialogRef.componentInstance !== null) {
       this.dialogRef.componentInstance.data = changes['value'].currentValue;

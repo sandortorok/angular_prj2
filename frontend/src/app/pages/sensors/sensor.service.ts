@@ -1,9 +1,9 @@
 import { Sensor, yellowMin } from './sensor.model';
 import { HttpClient } from '@angular/common/http';
-import { environment } from '../../../environments/environment';
+import { environment } from 'src/environments/environment';
 import { Injectable, isDevMode } from '@angular/core';
 import { WebsocketService } from 'src/app/communication/websocket.service';
-import { BehaviorSubject, takeUntil } from 'rxjs';
+import { BehaviorSubject, Observable, takeUntil } from 'rxjs';
 
 @Injectable()
 export class SensorService {
@@ -77,11 +77,13 @@ export class SensorService {
   createSensor(sensor: Sensor) {
     return this.http.post(this.url, { sensor });
   }
-  isAddressTaken(address: number) {
-    return this.http.get(this.url + `/addresstaken/${address}`);
+  isAddressTaken(address: number, panelId) {
+    return this.http.get<boolean>(
+      this.url + `/addresstaken/${panelId}/${address}`
+    );
   }
-  isNameTaken(name: string) {
-    return this.http.get(this.url + `/nametaken/${name}`);
+  isNameTaken(name: string, panelId: number) {
+    return this.http.get<boolean>(this.url + `/nametaken/${panelId}/${name}`);
   }
   deleteSensor(id: number) {
     return this.http.delete(this.url + `/${id}`);

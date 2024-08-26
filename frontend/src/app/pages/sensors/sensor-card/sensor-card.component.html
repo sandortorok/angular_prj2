@@ -1,11 +1,17 @@
-<mat-card style="width: 380px; max-height: 400px; min-height: 250px">
+<mat-card
+  style="width: 380px; max-height: 400px; min-height: 250px"
+  [ngClass]="'border' + sensor.panelId"
+>
   <mat-card-header>
     <button mat-fab color="primary" class="bellIcon" (click)="changeHorn()">
       <mat-icon>{{ sensor.horn ? "volume_up" : "volume_off" }}</mat-icon>
     </button>
     <mat-card-title style="font-weight: bold">{{ sensor.name }}</mat-card-title>
-    <mat-card-subtitle>
-      <span>Can cím: ({{ sensor.address }})</span></mat-card-subtitle
+    <mat-card-subtitle
+      ><span>Can cím: ({{ sensor.address }})</span></mat-card-subtitle
+    >
+    <mat-card-subtitle
+      ><span>Panel ID: ({{ sensor.panelId }})</span></mat-card-subtitle
     >
   </mat-card-header>
   <mat-card-content>

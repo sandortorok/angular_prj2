@@ -12,10 +12,14 @@ datasource db {
 
 model Sensor {
   id    Int     @default(autoincrement()) @id
-  name  String @unique()
-  address Int @unique()
+  name  String
+  address Int
   horn Boolean @default(false)
+  panelId Int @default(1)
+  panel Panel @relation(fields: [panelId], references: [id])
   history SensorHistory[]
+  @@unique([panelId, name], name: "nameIdentifier")
+  @@unique([panelId, address], name: "addressIdentifier")
 }
 
 model SensorHistory {
@@ -28,10 +32,14 @@ model SensorHistory {
 
 model Siren {
   id Int @default(autoincrement()) @id
-  name String @unique()
+  name String 
   address Int @default(0)
   on Boolean @default(false)
   muted Boolean @default(false)
+  panelId Int @default(1)
+  panel Panel @relation(fields: [panelId], references: [id])
+  @@unique([panelId, name], name: "nameIdentifier")
+  @@unique([panelId, address], name: "addressIdentifier")
 }
 
 model ErrorMessage{
@@ -42,4 +50,12 @@ model ErrorMessage{
 model Tesztmode {
   id Int @default(1) @id
   isOn Boolean
+}
+
+model Panel {
+  id Int @default(autoincrement()) @id
+  path String
+  address Int
+  sensors Sensor[]
+  sirens Siren[]
 }

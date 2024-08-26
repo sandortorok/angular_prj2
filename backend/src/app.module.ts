@@ -15,6 +15,8 @@ import { TestModeService } from './test-mode/test-mode.service';
 import { LogicService } from './logic/logic.service';
 import { ErrorMessageService } from './error-message/error-message.service';
 import { ErrorMessageController } from './error-message/error-message.controller';
+import { PanelController } from './panel/panel.controller';
+import { PanelService } from './panel/panel.service';
 
 @Module({
   imports: [],
@@ -24,6 +26,7 @@ import { ErrorMessageController } from './error-message/error-message.controller
     SirenController,
     TestModeController,
     ErrorMessageController,
+    PanelController,
   ],
   providers: [
     AppService,
@@ -37,6 +40,7 @@ import { ErrorMessageController } from './error-message/error-message.controller
     SerialService,
     LogicService,
     ErrorMessageService,
+    PanelService,
   ],
 })
 export class AppModule {}

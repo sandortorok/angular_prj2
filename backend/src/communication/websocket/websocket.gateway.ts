@@ -12,6 +12,7 @@ import { WebsocketService } from './websocket.service';
 import { SirenService } from 'src/siren/siren.service';
 import { SerialService } from '../serial/serial.service';
 import { LogicService } from 'src/logic/logic.service';
+import { Siren } from '@prisma/client';
 
 @WebSocketGateway({ cors: true })
 export class WebsocketGateway
@@ -41,8 +42,7 @@ export class WebsocketGateway
 
   @SubscribeMessage('changeSiren')
   async handleMessage(client: any, payload: string) {
-    const newSiren: { name: string; muted?: boolean; on?: boolean } =
-      JSON.parse(payload);
+    const newSiren: Siren = JSON.parse(payload);
     this.logic.updateSiren(newSiren);
   }
   @SubscribeMessage('testModeChange')

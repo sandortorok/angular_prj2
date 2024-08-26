@@ -1,0 +1,14 @@
+-- AlterTable
+ALTER TABLE `Sensor` ADD COLUMN `panelId` INTEGER NOT NULL DEFAULT 1;
+
+-- CreateTable
+CREATE TABLE `Panel` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `path` VARCHAR(191) NOT NULL,
+    `hexCode` VARCHAR(191) NOT NULL,
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- AddForeignKey
+ALTER TABLE `Sensor` ADD CONSTRAINT `Sensor_panelId_fkey` FOREIGN KEY (`panelId`) REFERENCES `Panel`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;

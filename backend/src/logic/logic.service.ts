@@ -1,3 +1,4 @@
+import { PanelService } from './../panel/panel.service';
 import { ErrorMessageService } from './../error-message/error-message.service';
 import { Sensor, Siren } from '@prisma/client';
 import { TestModeService } from './../test-mode/test-mode.service';
@@ -18,6 +19,7 @@ export class LogicService implements OnModuleInit {
     private sirenService: SirenService,
     private errorService: ErrorMessageService,
     private sensorService: SensorService,
+    private panelService: PanelService,
   ) {}
 
   latestValues: sensorType = {} as sensorType;
@@ -31,8 +33,9 @@ export class LogicService implements OnModuleInit {
   sensorSubject: BehaviorSubject<Array<Sensor>> = new BehaviorSubject([]);
 
   connectTries = 0;
-  connectionSubject: ReplaySubject<boolean> = new ReplaySubject();
-  connectionResponse$: Observable<boolean> =
+  connectionSubject: ReplaySubject<{ connection: boolean; path: string }> =
+    new ReplaySubject();
+  connectionResponse$: Observable<{ connection: boolean; path: string }> =
     this.connectionSubject.asObservable();
 
   dataSubject: ReplaySubject<{
@@ -40,12 +43,14 @@ export class LogicService implements OnModuleInit {
     value: number;
     sensorId: number;
     newCan: number;
+    path?: string;
   }> = new ReplaySubject();
   dataMessage$: Observable<{
     raw: number;
     value: number;
     sensorId: number;
     newCan: number;
+    path?: string;
   }> = this.dataSubject.asObservable();
 
   onModuleInit() {
@@ -55,26 +60,33 @@ export class LogicService implements OnModuleInit {
     this.sirenService.sirens({}).then((res) => {
       this.sirenSubject.next(res);
     });
-    this.serialService.connectSerial(this.connectionSubject, this.dataSubject);
+    //this.serialService.connectSerial(this.connectionSubject, this.dataSubject);
     this.sensorService.sensors({}).then((res) => {
       this.sensorSubject.next(res);
     });
-    this.handleConnection();
-    this.handleDataIncome();
+    this.panelService.panels({}).then((res) => {
+      this.serialService.connectSerialMultiple(
+        res.map((data) => data.path),
+        this.connectionSubject,
+        this.dataSubject,
+      );
+    });
+    //this.handleConnection();
+    //this.handleDataIncome();
   }
   handleConnection() {
     this.connectionResponse$.subscribe(async (response) => {
-      if (response === false) {
+      if (!response.connection && response.path === '/dev/ttyUSB0') {
         this.connectTries++;
         console.log('Failed to connect to serial port. Try', this.connectTries);
         await delay(5000);
-        this.serialService.connectSerial(
-          this.connectionSubject,
-          this.dataSubject,
-        );
-      } else {
+        // this.serialService.connectSerial(
+        //   this.connectionSubject,
+        //   this.dataSubject,
+        // );
+      } else if (response.connection) {
         this.connectTries = 0;
-        console.log('Connected to Serial port');
+        console.log('Connected to Serial port', response.path);
         this.aliveCheck();
         this.startPolling();
       }
@@ -128,17 +140,12 @@ export class LogicService implements OnModuleInit {
     }
     for (const siren of sirens) {
       await delay(100);
-      await this.serialService.sirenCommand(
-        siren.address,
-        siren.on && !siren.muted,
-      );
+      await this.serialService.sirenCommand(siren);
     }
   }
   startPolling() {
     setInterval(async () => {
-      await this.serialService.pollAddresses(
-        this.sensorSubject.getValue().map((sensor) => sensor.address),
-      );
+      await this.serialService.pollAddresses(this.sensorSubject.getValue());
       await this.sirenCheck();
     }, 5000);
   }
@@ -156,7 +163,7 @@ export class LogicService implements OnModuleInit {
     });
     this.wsService.sendAliveAddresses(Object.keys(this.aliveCanAddresses));
   }
-  async updateSiren(siren: { name: string; muted?: boolean; on?: boolean }) {
+  async updateSiren(siren: Siren) {
     const sirens = this.sirenSubject.getValue();
     sirens.forEach((s) => {
       if (s.name === siren.name) {
@@ -170,7 +177,7 @@ export class LogicService implements OnModuleInit {
     });
     await this.sirenService.updateSiren({
       where: {
-        name: siren.name,
+        nameIdentifier: { name: siren.name, panelId: siren.panelId },
       },
       data: {
         muted: siren.muted,

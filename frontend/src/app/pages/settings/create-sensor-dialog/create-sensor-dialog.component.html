@@ -14,8 +14,11 @@
         <mat-error *ngIf="name.invalid && name.hasError('required')">
           Adjon meg egy nevet!
         </mat-error>
+        <mat-error *ngIf="name.invalid && name.hasError('taken')">
+          A megadott név már foglalt!
+        </mat-error>
         <mat-error *ngIf="name.invalid && name.hasError('minlength')">
-          A név legalább 6 karakter legyen
+          A név legalább 6 karakter legyen!
         </mat-error>
       </mat-form-field>
     </div>
@@ -43,6 +46,17 @@
         <mat-error *ngIf="address.invalid && address.hasError('max')">
           Adjon meg egy 255-nél kisebb számot!
         </mat-error>
+      </mat-form-field>
+    </div>
+    <div class="formElement">
+      <h4>Panel ID</h4>
+      <mat-form-field appearance="fill">
+        <mat-label>Panel ID</mat-label>
+        <mat-select (valueChange)="newSelected($event)">
+          <mat-option *ngFor="let panel of panels" [value]="panel.id">
+            {{ panel.id }}
+          </mat-option>
+        </mat-select>
       </mat-form-field>
     </div>
   </form>

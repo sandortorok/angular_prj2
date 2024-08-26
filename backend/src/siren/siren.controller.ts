@@ -22,9 +22,20 @@ export class SirenController {
     return this.sirenService.sirens({});
   }
 
-  @Get('nametaken/:name')
-  nameTaken(@Param('name') name: string): Promise<boolean> {
-    return this.sirenService.isNameTaken(name);
+  @Get('nametaken/:panelid/:name')
+  nameTaken(
+    @Param('panelid') panelId: number,
+    @Param('name') name: string,
+  ): Promise<boolean> {
+    return this.sirenService.isNameTaken(name, Number(panelId));
+  }
+
+  @Get('nametaken/:panelid/:address')
+  addressTaken(
+    @Param('panelid') panelId: number,
+    @Param('address') address: number,
+  ): Promise<boolean> {
+    return this.sirenService.isAddressTaken(Number(address), Number(panelId));
   }
 
   @Patch('name/:id')

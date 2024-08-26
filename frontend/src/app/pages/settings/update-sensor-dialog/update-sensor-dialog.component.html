@@ -12,7 +12,7 @@
         <mat-label>Név</mat-label>
         <mat-select (valueChange)="newSelected($event)">
           <mat-option *ngFor="let sensor of sensors" [value]="sensor.name">
-            {{ sensor.name }}
+            {{ sensor.name }} (Panel: {{ sensor.panelId }})
           </mat-option>
         </mat-select>
       </mat-form-field>

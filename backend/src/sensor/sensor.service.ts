@@ -48,26 +48,22 @@ export class SensorService {
     });
   }
 
-  async isAddressTaken(address: number): Promise<boolean> {
+  async isAddressTaken(address: number, panelId: number): Promise<boolean> {
     return new Promise((resolve) => {
       this.prisma.sensor
         .findUnique({
-          where: {
-            address: address,
-          },
+          where: { addressIdentifier: { panelId, address } },
         })
         .then((res) => {
           resolve(!!res);
         });
     });
   }
-  async isNameTaken(name: string): Promise<boolean> {
+  async isNameTaken(name: string, panelId: number): Promise<boolean> {
     return new Promise((resolve) => {
       this.prisma.sensor
         .findUnique({
-          where: {
-            name: name,
-          },
+          where: { nameIdentifier: { panelId, name } },
         })
         .then((res) => {
           resolve(!!res);

@@ -21,14 +21,20 @@ export class SensorController {
     return this.sensorService.sensors({});
   }
 
-  @Get('addresstaken/:address')
-  adressTaken(@Param('address') address: number): Promise<boolean> {
-    return this.sensorService.isAddressTaken(Number(address));
+  @Get('addresstaken/:panelid/:address')
+  adressTaken(
+    @Param('panelid') panelId: number,
+    @Param('address') address: number,
+  ): Promise<boolean> {
+    return this.sensorService.isAddressTaken(Number(address), Number(panelId));
   }
 
-  @Get('nametaken/:name')
-  nameTaken(@Param('name') name: string): Promise<boolean> {
-    return this.sensorService.isNameTaken(name);
+  @Get('nametaken/:panelid/:name')
+  nameTaken(
+    @Param('panelid') panelId: number,
+    @Param('name') name: string,
+  ): Promise<boolean> {
+    return this.sensorService.isNameTaken(name, Number(panelId));
   }
 
   @Patch('name/:id')

@@ -45,12 +45,12 @@ export class SirenService {
     });
   }
 
-  async isNameTaken(name: string): Promise<boolean> {
+  async isNameTaken(name: string, panelId: number): Promise<boolean> {
     return new Promise((resolve) => {
       this.prisma.siren
         .findUnique({
           where: {
-            name: name,
+            nameIdentifier: { panelId, name },
           },
         })
         .then((res) => {
@@ -58,7 +58,19 @@ export class SirenService {
         });
     });
   }
-
+  async isAddressTaken(address: number, panelId: number): Promise<boolean> {
+    return new Promise((resolve) => {
+      this.prisma.siren
+        .findUnique({
+          where: {
+            addressIdentifier: { panelId, address },
+          },
+        })
+        .then((res) => {
+          resolve(!!res);
+        });
+    });
+  }
   async deleteSiren(where: Prisma.SirenWhereUniqueInput): Promise<Siren> {
     return this.prisma.siren.delete({
       where,

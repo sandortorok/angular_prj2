@@ -5,6 +5,7 @@ export interface Sensor {
   address: number;
   horn: boolean;
   value?: number;
+  panelId: number;
 }
 
 export const redMin: number = 70;

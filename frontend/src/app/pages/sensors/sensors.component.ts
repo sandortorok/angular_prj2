@@ -6,7 +6,7 @@ import { SensorService } from 'src/app/pages/sensors/sensor.service';
 import { SensorDialogComponent } from './gauge-dialog/gauge-dialog.component';
 import { Subject, takeUntil } from 'rxjs';
 
-type OrderBy = 'name' | 'value' | 'address';
+type OrderBy = 'name' | 'value' | 'address' | 'panelId';
 type AscDesc = 'asc' | 'desc';
 @Component({
   selector: 'app-sensors',
@@ -23,6 +23,7 @@ export class SensorsComponent implements OnInit, OnDestroy {
     { name: 'Név szerint', type: 'name' },
     { name: 'Ammónia szint szerint', type: 'value' },
     { name: 'Can cím szerint', type: 'address' },
+    { name: 'Panel ID alapján', type: 'panelId' },
   ];
   chosenOrder: OrderBy = 'address';
   chosenAscDesc: AscDesc = 'asc';
