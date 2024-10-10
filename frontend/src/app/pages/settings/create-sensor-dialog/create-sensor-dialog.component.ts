@@ -49,7 +49,7 @@ export class CreateSensorDialogComponent {
 
     if (this.address.value && this.selectedPanel && this.name.value) {
       combineLatest([
-        this.sensorService.isNameTaken(this.name.value, this.selectedPanel.id),
+        this.sensorService.isNameTaken(this.name.value, this.selectedPanel.id!),
         this.sensorService.isAddressTaken(
           +this.address.value,
           this.selectedPanel.id
@@ -70,7 +70,7 @@ export class CreateSensorDialogComponent {
                 name: this.name.value!,
                 address: +this.address.value!,
                 horn: false,
-                panelId: this.selectedPanel!.id,
+                panelId: this.selectedPanel!.id!,
               })
               .subscribe((res) => {
                 this.dialogRef.close();

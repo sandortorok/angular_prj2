@@ -65,14 +65,10 @@ export class SensorService {
     });
   }
   updateHorn(id: number, horn: boolean) {
-    return this.http.patch(this.url + '/horn/' + id, {
-      horn: horn,
-    });
+    return this.http.patch(this.url + '/horn/' + id, { horn });
   }
   updateSensor(id: number, sensor: Sensor) {
-    return this.http.put(this.url + '/' + id, {
-      sensor: sensor,
-    });
+    return this.http.put(this.url + '/' + id, { sensor });
   }
   createSensor(sensor: Sensor) {
     return this.http.post(this.url, { sensor });

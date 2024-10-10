@@ -1,11 +1,13 @@
-import { Injectable, Patch } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { SerialPort } from 'serialport';
 import { ByteLengthParser } from '@serialport/parser-byte-length';
 import { ReplaySubject } from 'rxjs';
-import { Sensor, Siren, Panel } from '@prisma/client';
+import { Sensor, Siren } from '@prisma/client';
+import { PanelService } from 'src/panel/panel.service';
 
 @Injectable()
 export class SerialService {
+  constructor(private panelService: PanelService) {}
   aliveCanAddresses = {};
   port?: SerialPort;
   ports: SerialPort[] = [];
@@ -40,15 +42,24 @@ export class SerialService {
         this.ports.push(newPort);
         connectSubject.next({ connection: true, path: path });
 
-        const parser = newPort.pipe(new ByteLengthParser({ length: 8 }));
+        const parser = newPort.pipe(new ByteLengthParser({ length: 9 }));
         parser.on('data', (data: Buffer) => {
           const fr = data.toString('hex').match(/.{1,2}/g);
           const rawValue = parseInt(fr[2], 16) + parseInt(fr[3], 16) * 256;
           const value = ppmConvert(rawValue);
           const sensorId = parseInt(fr[0], 16);
           const newCan = parseInt(fr[5], 16);
+          const panelId = parseInt(fr[7], 16);
+          this.panelService.updatePanel({
+            where: { address: panelId },
+            data: { path },
+          });
           dataSubject.next({ raw: rawValue, value, sensorId, newCan, path });
         });
+      });
+      newPort.on('close', async () => {
+        console.log('Connection closed:', path);
+        connectSubject.next({ connection: false, path });
       });
     });
     return;
@@ -92,12 +103,15 @@ export class SerialService {
           dataSubject.next({ raw: rawValue, value, sensorId, newCan });
         });
       });
+      newPort.on('close', async () => {
+        connectSubject.next({ connection: false, path });
+      });
     } catch (err) {
       //Actually not used error handling
       //Error handled in constructor
       console.log(err);
       console.log('error');
-      connectSubject.next({ connection: false, path: '/dev/ttyUSB0' });
+      connectSubject.next({ connection: false, path });
     }
   }
   async sirenCommand(siren: Siren) {

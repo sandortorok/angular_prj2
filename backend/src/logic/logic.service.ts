@@ -66,24 +66,28 @@ export class LogicService implements OnModuleInit {
     });
     this.panelService.panels({}).then((res) => {
       this.serialService.connectSerialMultiple(
-        res.map((data) => data.path),
+        res.map((data, idx) => `/dev/ttyUSB${idx}`),
         this.connectionSubject,
         this.dataSubject,
       );
     });
-    //this.handleConnection();
-    //this.handleDataIncome();
+    this.handleConnection();
+    this.handleDataIncome();
   }
   handleConnection() {
     this.connectionResponse$.subscribe(async (response) => {
-      if (!response.connection && response.path === '/dev/ttyUSB0') {
+      if (!response.connection) {
         this.connectTries++;
-        console.log('Failed to connect to serial port. Try', this.connectTries);
+        console.log(
+          `Failed to connect to serial port: ${response.path}. Try`,
+          this.connectTries,
+        );
         await delay(5000);
-        // this.serialService.connectSerial(
-        //   this.connectionSubject,
-        //   this.dataSubject,
-        // );
+        this.serialService.connectSerial(
+          this.connectionSubject,
+          this.dataSubject,
+          response.path,
+        );
       } else if (response.connection) {
         this.connectTries = 0;
         console.log('Connected to Serial port', response.path);

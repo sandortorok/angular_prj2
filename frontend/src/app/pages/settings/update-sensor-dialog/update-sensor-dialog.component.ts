@@ -52,6 +52,8 @@ export class UpdateSensorDialogComponent implements OnInit {
     }
     this.submitted = true;
     if (this.newAddress.value && this.newName.value && this.selectedSensor) {
+      console.log(this.newAddress.value);
+      console.log(this.selectedSensor);
       this.sensorService
         .updateSensor(this.selectedSensor.id!, this.selectedSensor)
         .subscribe({

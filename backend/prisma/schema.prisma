@@ -16,7 +16,7 @@ model Sensor {
   address Int
   horn Boolean @default(false)
   panelId Int @default(1)
-  panel Panel @relation(fields: [panelId], references: [id])
+  panel Panel @relation(fields: [panelId], references: [address])
   history SensorHistory[]
   @@unique([panelId, name], name: "nameIdentifier")
   @@unique([panelId, address], name: "addressIdentifier")
@@ -37,7 +37,7 @@ model Siren {
   on Boolean @default(false)
   muted Boolean @default(false)
   panelId Int @default(1)
-  panel Panel @relation(fields: [panelId], references: [id])
+  panel Panel @relation(fields: [panelId], references: [address])
   @@unique([panelId, name], name: "nameIdentifier")
   @@unique([panelId, address], name: "addressIdentifier")
 }
@@ -55,7 +55,7 @@ model Tesztmode {
 model Panel {
   id Int @default(autoincrement()) @id
   path String
-  address Int
+  address Int @unique
   sensors Sensor[]
   sirens Siren[]
 }

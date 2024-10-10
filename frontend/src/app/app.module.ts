@@ -52,6 +52,9 @@ import { ToggleButtonComponent } from './shared/toggle-button/toggle-button.comp
 import { getHunPaginatorIntl } from './hun-paginator-intl';
 import { MapComponent } from './pages/map/map.component';
 import { MapSvgComponent } from './pages/map/map-svg/map-svg.component';
+import { UpdatePanelDialogComponent } from './pages/settings/update-panel-dialog/update-panel-dialog.component';
+import { CreatePanelDialogComponent } from './pages/settings/create-panel-dialog/create-panel-dialog.component';
+import { DeletePanelDialogComponent } from './pages/settings/delete-panel-dialog/delete-panel-dialog.component';
 
 const config: SocketIoConfig = { url: 'http://localhost:3000', options: {} };
 
@@ -99,6 +102,9 @@ const matModules = [
     ToggleButtonComponent,
     MapComponent,
     MapSvgComponent,
+    UpdatePanelDialogComponent,
+    CreatePanelDialogComponent,
+    DeletePanelDialogComponent,
   ],
   imports: [
     BrowserModule,

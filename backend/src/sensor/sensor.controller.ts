@@ -71,9 +71,9 @@ export class SensorController {
       return s;
     } catch (err) {
       if (err.code === 'P2002') {
-        if (err.meta.target === 'Sensor_name_key') {
+        if (err.meta.target === 'Sensor_panelId_name_key') {
           throw new HttpException('Name taken', HttpStatus.CONFLICT);
-        } else if (err.meta.target === 'Sensor_address_key') {
+        } else if (err.meta.target === 'Sensor_panelId_address_key') {
           throw new HttpException('Address taken', HttpStatus.CONFLICT);
         }
       } else {
