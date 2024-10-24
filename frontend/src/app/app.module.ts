@@ -32,7 +32,7 @@ import { AlarmComponent } from './pages/alarm/alarm.component';
 import { SensorCardComponent } from './pages/sensors/sensor-card/sensor-card.component';
 import { SensorsComponent } from './pages/sensors/sensors.component';
 import { SensorService } from './pages/sensors/sensor.service';
-import { HttpClientModule } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
 import { GaugeChartComponent } from './gauge-chart/gauge-chart.component';
 import { SensorDialogComponent } from './pages/sensors/gauge-dialog/gauge-dialog.component';
@@ -78,53 +78,47 @@ const matModules = [
   MatSnackBarModule,
 ];
 
-@NgModule({
-  declarations: [
-    AppComponent,
-    SidenavComponent,
-    KwStopIconComponent,
-    LoginComponent,
-    HelpComponent,
-    SettingsComponent,
-    AlarmComponent,
-    SensorCardComponent,
-    SensorsComponent,
-    GaugeChartComponent,
-    SensorDialogComponent,
-    CreateSensorDialogComponent,
-    UpdateSensorDialogComponent,
-    DeleteSensorDialogComponent,
-    CreateSirenDialogComponent,
-    UpdateSirenDialogComponent,
-    DeleteSirenDialogComponent,
-    OnlyNumberDirective,
-    SortPipe,
-    SirensComponent,
-    AliveCanComponent,
-    ToggleButtonComponent,
-    MapComponent,
-    MapSvgComponent,
-    UpdatePanelDialogComponent,
-    CreatePanelDialogComponent,
-    DeletePanelDialogComponent,
-    DiagramsComponent,
-    ChartComponent,
-  ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    BrowserAnimationsModule,
-    HttpClientModule,
-    FormsModule,
-    ReactiveFormsModule,
-    SocketIoModule.forRoot(config),
-    ...matModules,
-  ],
-  providers: [
-    SensorService,
-    SirenService,
-    { provide: MatPaginatorIntl, useValue: getHunPaginatorIntl() },
-  ],
-  bootstrap: [AppComponent],
-})
+@NgModule({ declarations: [
+        AppComponent,
+        SidenavComponent,
+        KwStopIconComponent,
+        LoginComponent,
+        HelpComponent,
+        SettingsComponent,
+        AlarmComponent,
+        SensorCardComponent,
+        SensorsComponent,
+        GaugeChartComponent,
+        SensorDialogComponent,
+        CreateSensorDialogComponent,
+        UpdateSensorDialogComponent,
+        DeleteSensorDialogComponent,
+        CreateSirenDialogComponent,
+        UpdateSirenDialogComponent,
+        DeleteSirenDialogComponent,
+        OnlyNumberDirective,
+        SortPipe,
+        SirensComponent,
+        AliveCanComponent,
+        ToggleButtonComponent,
+        MapComponent,
+        MapSvgComponent,
+        UpdatePanelDialogComponent,
+        CreatePanelDialogComponent,
+        DeletePanelDialogComponent,
+        DiagramsComponent,
+        ChartComponent,
+    ],
+    bootstrap: [AppComponent], imports: [BrowserModule,
+        AppRoutingModule,
+        BrowserAnimationsModule,
+        FormsModule,
+        ReactiveFormsModule,
+        SocketIoModule.forRoot(config),
+        ...matModules], providers: [
+        SensorService,
+        SirenService,
+        { provide: MatPaginatorIntl, useValue: getHunPaginatorIntl() },
+        provideHttpClient(withInterceptorsFromDi()),
+    ] })
 export class AppModule {}
