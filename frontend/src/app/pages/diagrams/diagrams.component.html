@@ -1,0 +1,9 @@
+<h4>Szenzor kiválasztása</h4>
+<mat-form-field appearance="fill">
+  <mat-label>Sensor ID</mat-label>
+  <mat-select (valueChange)="newSelected($event)">
+    <mat-option *ngFor="let sensor of sensors" [value]="sensor.id">
+      {{ sensor.name }} (panel: {{sensor.panelId}})
+    </mat-option>
+  </mat-select>
+</mat-form-field>

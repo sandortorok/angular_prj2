@@ -55,6 +55,8 @@ import { MapSvgComponent } from './pages/map/map-svg/map-svg.component';
 import { UpdatePanelDialogComponent } from './pages/settings/update-panel-dialog/update-panel-dialog.component';
 import { CreatePanelDialogComponent } from './pages/settings/create-panel-dialog/create-panel-dialog.component';
 import { DeletePanelDialogComponent } from './pages/settings/delete-panel-dialog/delete-panel-dialog.component';
+import { DiagramsComponent } from './pages/diagrams/diagrams.component';
+import { ChartComponent } from './pages/diagrams/chart/chart.component';
 
 const config: SocketIoConfig = { url: 'http://localhost:3000', options: {} };
 
@@ -105,6 +107,8 @@ const matModules = [
     UpdatePanelDialogComponent,
     CreatePanelDialogComponent,
     DeletePanelDialogComponent,
+    DiagramsComponent,
+    ChartComponent,
   ],
   imports: [
     BrowserModule,
