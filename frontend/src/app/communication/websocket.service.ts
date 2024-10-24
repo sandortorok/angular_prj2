@@ -12,9 +12,10 @@ export class WebsocketService {
 
   public sensorChange$: BehaviorSubject<{
     raw: number;
-    sensorAddress: number;
+    address: number;
     value: number;
-  }> = new BehaviorSubject({ sensorAddress: 0, value: 0, raw: 0 });
+    panelId: number;
+  }> = new BehaviorSubject({ address: 0, value: 0, raw: 0, panelId: 1 });
   public errorMessage$: BehaviorSubject<{ timestamp: Date; message: string }> =
     new BehaviorSubject({ timestamp: new Date(), message: '' });
 
@@ -35,6 +36,7 @@ export class WebsocketService {
 
   public changeSirenMute(siren: {
     name: string;
+    panelId: number;
     muted?: boolean;
     on?: boolean;
   }) {
@@ -57,7 +59,12 @@ export class WebsocketService {
     });
     this.socket.on(
       'onMessage',
-      (message: { sensorAddress: number; value: number; raw: number }) => {
+      (message: {
+        address: number;
+        value: number;
+        raw: number;
+        panelId: number;
+      }) => {
         this.sensorChange$.next(message);
       }
     );

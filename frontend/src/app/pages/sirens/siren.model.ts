@@ -4,4 +4,5 @@ export interface Siren {
   address: string;
   muted: boolean;
   isOn?: boolean;
+  panelId: number;
 }

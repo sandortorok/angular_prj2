@@ -2,27 +2,32 @@ import { Injectable } from '@nestjs/common';
 import { SerialPort } from 'serialport';
 import { ByteLengthParser } from '@serialport/parser-byte-length';
 import { ReplaySubject } from 'rxjs';
-import { Sensor, Siren } from '@prisma/client';
+import { Panel, Sensor, Siren } from '@prisma/client';
 import { PanelService } from 'src/panel/panel.service';
+import { SensorValue } from '../websocket/websocket.service';
 
 @Injectable()
 export class SerialService {
-  constructor(private panelService: PanelService) {}
+  constructor(private panelService: PanelService) {
+    this.updatePanelsPaths();
+  }
+
   aliveCanAddresses = {};
-  port?: SerialPort;
   ports: SerialPort[] = [];
-  connectSerialMultiple(
+  panelPaths: Panel[] = [];
+
+  updatePanelsPaths() {
+    this.panelService.panels({}).then((res) => {
+      this.panelPaths = res;
+    });
+  }
+  async connectSerialMultiple(
     paths: string[],
     connectSubject: ReplaySubject<{ connection: boolean; path: string }>,
-    dataSubject: ReplaySubject<{
-      raw: number;
-      value: number;
-      sensorId: number;
-      newCan: number;
-      path?: string;
-    }>,
+    dataSubject: ReplaySubject<SensorValue & { newCan: number }>,
   ) {
-    paths.forEach((path) => {
+    for (const path of paths) {
+      await delay(1000);
       const newPort = new SerialPort(
         {
           path: path,
@@ -34,7 +39,6 @@ export class SerialService {
         (err) => {
           if (err) {
             connectSubject.next({ connection: false, path: path });
-            console.log(err);
           }
         },
       );
@@ -45,33 +49,37 @@ export class SerialService {
         const parser = newPort.pipe(new ByteLengthParser({ length: 9 }));
         parser.on('data', (data: Buffer) => {
           const fr = data.toString('hex').match(/.{1,2}/g);
-          const rawValue = parseInt(fr[2], 16) + parseInt(fr[3], 16) * 256;
-          const value = ppmConvert(rawValue);
-          const sensorId = parseInt(fr[0], 16);
-          const newCan = parseInt(fr[5], 16);
           const panelId = parseInt(fr[7], 16);
-          this.panelService.updatePanel({
-            where: { address: panelId },
-            data: { path },
+          let raw = parseInt(fr[2], 16) + parseInt(fr[3], 16) * 256;
+          raw = randomIntFromInterval(100, 1000);
+          const value = ppmConvert(raw);
+          const address = parseInt(fr[0], 16);
+          const newCan = fr[6] === 'f0' ? parseInt(fr[5], 16) : 0;
+
+          const sendData = { raw, value, panelId, address, newCan, path };
+          const currentPanel = this.panelPaths.find((p) => {
+            return p.address === panelId;
           });
-          dataSubject.next({ raw: rawValue, value, sensorId, newCan, path });
+          console.log('reading', { raw, address, newCan, panelId });
+          if (currentPanel.path != path) {
+            this.panelService
+              .updatePanel({ where: { address: panelId }, data: { path } })
+              .then(() => {
+                this.updatePanelsPaths();
+              });
+          }
+          dataSubject.next(sendData);
         });
       });
       newPort.on('close', async () => {
         console.log('Connection closed:', path);
         connectSubject.next({ connection: false, path });
       });
-    });
-    return;
+    }
   }
   connectSerial(
     connectSubject: ReplaySubject<{ connection: boolean; path: string }>,
-    dataSubject: ReplaySubject<{
-      raw: number;
-      value: number;
-      sensorId: number;
-      newCan: number;
-    }>,
+    dataSubject: ReplaySubject<SensorValue & { newCan: number }>,
     path: string,
   ) {
     try {
@@ -85,7 +93,6 @@ export class SerialService {
         },
         (err) => {
           if (err) {
-            console.log(err);
             connectSubject.next({ connection: false, path });
           }
         },
@@ -93,14 +100,27 @@ export class SerialService {
       newPort.on('open', async () => {
         connectSubject.next({ connection: true, path });
 
-        const parser = newPort.pipe(new ByteLengthParser({ length: 8 }));
+        const parser = newPort.pipe(new ByteLengthParser({ length: 9 }));
         parser.on('data', (data: Buffer) => {
           const fr = data.toString('hex').match(/.{1,2}/g);
-          const rawValue = parseInt(fr[2], 16) + parseInt(fr[3], 16) * 256;
-          const value = ppmConvert(rawValue);
-          const sensorId = parseInt(fr[0], 16);
-          const newCan = parseInt(fr[5], 16);
-          dataSubject.next({ raw: rawValue, value, sensorId, newCan });
+          const raw = parseInt(fr[2], 16) + parseInt(fr[3], 16) * 256;
+          const value = ppmConvert(raw);
+          const address = parseInt(fr[0], 16);
+          const panelId = parseInt(fr[7], 16);
+          const newCan = fr[6] === 'f0' ? parseInt(fr[5], 16) : 0;
+
+          const currentPanel = this.panelPaths.find((p) => {
+            return p.address === panelId;
+          });
+          console.log('reading', { raw, value, address, newCan, panelId });
+          if (currentPanel.path != path) {
+            this.panelService
+              .updatePanel({ where: { address: panelId }, data: { path } })
+              .then(() => {
+                this.updatePanelsPaths();
+              });
+          }
+          dataSubject.next({ raw, value, address, newCan, panelId, path });
         });
       });
       newPort.on('close', async () => {
@@ -128,10 +148,20 @@ export class SerialService {
     const b1 = Buffer.from('out');
     const b2 = Buffer.from(output, 'hex');
     const b3 = Buffer.from('#');
-
-    await this.ports
-      .find((p) => p.settings.path === `/dev/ttyUSB${siren.panelId - 1}`)
-      .write(Buffer.concat([b1, b2, b3]));
+    const path = this.panelPaths.find((p) => {
+      return p.address === siren.panelId;
+    }).path;
+    const port = this.ports.find((p) => {
+      return p.settings.path === path;
+    });
+    if (port != undefined) {
+      console.log('siren writing', {
+        path,
+        address: siren.address,
+        on: siren.on,
+      });
+      await port.write(Buffer.concat([b1, b2, b3]));
+    }
   }
   async pollAddresses(sensors: Sensor[]) {
     for (const sensor of sensors) {
@@ -141,19 +171,41 @@ export class SerialService {
       }
       const b1 = Buffer.from('get');
       const b2 = Buffer.from(hexString, 'hex');
-      const b3 = Buffer.from('#'); //
-      this.ports
-        .find((p) => p.settings.path === `/dev/ttyUSB${sensor.panelId - 1}`)
-        .write(Buffer.concat([b1, b2, b3]));
+      const b3 = Buffer.from('#'); //;
+      const path = this.panelPaths.find((p) => {
+        return p.address === sensor.panelId;
+      }).path;
+      const port = this.ports.find((p) => {
+        return p.settings.path === path;
+      });
+      if (port != undefined) {
+        console.log('writing', { path, address: sensor.address });
+        await port.write(Buffer.concat([b1, b2, b3]));
+      }
       await delay(100);
     }
   }
+  async queryPanelAddress(path: string) {
+    const port = this.ports.find((p) => {
+      return p.settings.path === path;
+    });
+    if (port != undefined) {
+      console.log('queryAddress', path);
+      const b1 = Buffer.from('get');
+      const b2 = Buffer.from('0001', 'hex');
+      const b3 = Buffer.from('#'); //;
+      await port.write(Buffer.concat([b1, b2, b3]));
+    }
+  }
 }
+
 async function delay(ms) {
   // return await for better async stack trace support in case of errors.
   return await new Promise((resolve) => setTimeout(resolve, ms));
 }
-
+function randomIntFromInterval(min: number, max: number) {
+  return Math.floor(Math.random() * (max - min + 1) + min);
+}
 function ppmConvert(val) {
   if (val != 0) {
     let ppm_val = (val * 5) / 1024;

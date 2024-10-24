@@ -6,7 +6,6 @@ import { SensorService } from './sensor/sensor.service';
 import { SensorController } from './sensor/sensor.controller';
 import { SerialService } from './communication/serial/serial.service';
 import { WebsocketService } from './communication/websocket/websocket.service';
-import { RedisService } from './databases/redis.service';
 import { WebsocketGateway } from './communication/websocket/websocket.gateway';
 import { SirenService } from './siren/siren.service';
 import { SirenController } from './siren/siren.controller';
@@ -17,6 +16,9 @@ import { ErrorMessageService } from './error-message/error-message.service';
 import { ErrorMessageController } from './error-message/error-message.controller';
 import { PanelController } from './panel/panel.controller';
 import { PanelService } from './panel/panel.service';
+import { SensorDataService } from './logic/sensor-data.service';
+import { SensorHistoryController } from './sensor-history/sensor-history.controller';
+import { SensorHistoryService } from './sensor-history/sensor-history.service';
 
 @Module({
   imports: [],
@@ -27,13 +29,13 @@ import { PanelService } from './panel/panel.service';
     TestModeController,
     ErrorMessageController,
     PanelController,
+    SensorHistoryController,
   ],
   providers: [
     AppService,
     PrismaService,
     SensorService,
     WebsocketService,
-    RedisService,
     WebsocketGateway,
     SirenService,
     TestModeService,
@@ -41,6 +43,8 @@ import { PanelService } from './panel/panel.service';
     LogicService,
     ErrorMessageService,
     PanelService,
+    SensorDataService,
+    SensorHistoryService,
   ],
 })
 export class AppModule {}

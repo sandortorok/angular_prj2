@@ -22,7 +22,10 @@ export class SensorService {
     this.wss.sensorChange$.subscribe((changedSensor) => {
       let newSensors = this.sensors.getValue();
       newSensors.forEach((sensor) => {
-        if (sensor.address === changedSensor.sensorAddress) {
+        if (
+          sensor.address === changedSensor.address &&
+          sensor.panelId === changedSensor.panelId
+        ) {
           sensor.value = changedSensor.value;
           sensor.raw = changedSensor.raw;
         }

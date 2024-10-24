@@ -1,14 +1,15 @@
 import { Injectable } from '@nestjs/common';
+import { Sensor } from '@prisma/client';
 import { Server } from 'socket.io';
 
+export type SensorValue = Omit<
+  Sensor & { value: number; raw: number; path: string },
+  'id' | 'name' | 'horn'
+>;
 @Injectable()
 export class WebsocketService {
   public socket: Server = null;
-  sendAmmoniaValue(output: {
-    sensorAddress: number;
-    value: number;
-    raw: number;
-  }) {
+  sendAmmoniaValue(output: SensorValue) {
     if (!this.socket) return;
     this.socket.emit('onMessage', output);
   }

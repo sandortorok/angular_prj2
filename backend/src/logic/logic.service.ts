@@ -5,10 +5,13 @@ import { TestModeService } from './../test-mode/test-mode.service';
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { ReplaySubject, Observable, BehaviorSubject } from 'rxjs';
 import { SerialService } from 'src/communication/serial/serial.service';
-import { WebsocketService } from 'src/communication/websocket/websocket.service';
+import { SensorDataService } from './sensor-data.service';
+import {
+  SensorValue,
+  WebsocketService,
+} from 'src/communication/websocket/websocket.service';
 import { SirenService } from 'src/siren/siren.service';
 import { SensorService } from 'src/sensor/sensor.service';
-
 type sensorType = { sensorId: number; value: number };
 @Injectable()
 export class LogicService implements OnModuleInit {
@@ -20,6 +23,7 @@ export class LogicService implements OnModuleInit {
     private errorService: ErrorMessageService,
     private sensorService: SensorService,
     private panelService: PanelService,
+    private sensorDataService: SensorDataService,
   ) {}
 
   latestValues: sensorType = {} as sensorType;
@@ -38,20 +42,10 @@ export class LogicService implements OnModuleInit {
   connectionResponse$: Observable<{ connection: boolean; path: string }> =
     this.connectionSubject.asObservable();
 
-  dataSubject: ReplaySubject<{
-    raw: number;
-    value: number;
-    sensorId: number;
-    newCan: number;
-    path?: string;
-  }> = new ReplaySubject();
-  dataMessage$: Observable<{
-    raw: number;
-    value: number;
-    sensorId: number;
-    newCan: number;
-    path?: string;
-  }> = this.dataSubject.asObservable();
+  dataSubject: ReplaySubject<SensorValue & { newCan: number }> =
+    new ReplaySubject();
+  dataMessage$: Observable<SensorValue & { newCan: number }> =
+    this.dataSubject.asObservable();
 
   onModuleInit() {
     this.testModeService.getMode().then((mode) => {
@@ -64,6 +58,10 @@ export class LogicService implements OnModuleInit {
     this.sensorService.sensors({}).then((res) => {
       this.sensorSubject.next(res);
     });
+    this.panelService.updatePanels({
+      where: {},
+      data: { path: '' },
+    });
     this.panelService.panels({}).then((res) => {
       this.serialService.connectSerialMultiple(
         res.map((data, idx) => `/dev/ttyUSB${idx}`),
@@ -73,16 +71,14 @@ export class LogicService implements OnModuleInit {
     });
     this.handleConnection();
     this.handleDataIncome();
+    this.startPolling();
   }
   handleConnection() {
     this.connectionResponse$.subscribe(async (response) => {
       if (!response.connection) {
         this.connectTries++;
-        console.log(
-          `Failed to connect to serial port: ${response.path}. Try`,
-          this.connectTries,
-        );
-        await delay(5000);
+        console.log(`Failed connecting to ${response.path}`);
+        await delay(13000);
         this.serialService.connectSerial(
           this.connectionSubject,
           this.dataSubject,
@@ -91,21 +87,18 @@ export class LogicService implements OnModuleInit {
       } else if (response.connection) {
         this.connectTries = 0;
         console.log('Connected to Serial port', response.path);
-        this.aliveCheck();
-        this.startPolling();
+        this.canAliveCheck();
+        this.serialService.queryPanelAddress(response.path);
       }
     });
   }
   handleDataIncome() {
     this.dataMessage$.subscribe((data) => {
       this.aliveCanAddresses[`${data.newCan}`] = new Date();
-      this.latestValues[`${data.sensorId}`] = data.value;
-      this.wsService.sendAmmoniaValue({
-        raw: data.raw,
-        sensorAddress: data.sensorId,
-        value: data.value,
-      });
+      this.latestValues[`${data.address}`] = data.value;
+      this.wsService.sendAmmoniaValue(data);
       this.wsService.sendAliveAddresses(Object.keys(this.aliveCanAddresses));
+      this.sensorDataService.addData(data);
     });
   }
 
@@ -149,11 +142,19 @@ export class LogicService implements OnModuleInit {
   }
   startPolling() {
     setInterval(async () => {
-      await this.serialService.pollAddresses(this.sensorSubject.getValue());
-      await this.sirenCheck();
-    }, 5000);
+      const ports = this.serialService.ports.map((port) => {
+        return { port: port.settings.path, closed: port.closed };
+      });
+      const hasOpenPort = ports.some((p) => {
+        return !p.closed;
+      });
+      if (hasOpenPort) {
+        await this.serialService.pollAddresses(this.sensorSubject.getValue());
+        await this.sirenCheck();
+      }
+    }, 10000);
   }
-  aliveCheck() {
+  canAliveCheck() {
     Object.keys(this.aliveCanAddresses).forEach((address: string) => {
       if (isOld(this.aliveCanAddresses[address])) {
         delete this.aliveCanAddresses[address];

@@ -39,6 +39,7 @@ export class CreateSirenDialogComponent {
                 name: this.name.value!,
                 address: this.address.value!,
                 muted: false,
+                panelId: 1,
               })
               .subscribe((res) => {
                 this.dialogRef.close();

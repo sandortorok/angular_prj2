@@ -9,9 +9,8 @@ const yellowFg = '\x1b[33m';
 @Injectable()
 export class RedisService implements OnModuleInit {
   // client?: RedisClientType; //Ha hozzárakjuk a típust akkor lelassul
-  client?: any;
+  client = createClient();
   async onModuleInit() {
-    this.client = createClient();
     this.client.on('error', (err) => console.log('Redis Client Error', err));
     this.client.on('connect', () =>
       console.log(`${yellowFg}Connected to Redis${resetBg}`),

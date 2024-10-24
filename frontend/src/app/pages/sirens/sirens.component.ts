@@ -32,7 +32,11 @@ export class SirensComponent implements OnInit, OnDestroy {
         return sirenElement;
       });
     }
-    this.wss.changeSirenMute({ name: siren.name, muted: siren.muted });
+    this.wss.changeSirenMute({
+      name: siren.name,
+      muted: siren.muted,
+      panelId: siren.panelId,
+    });
   }
 
   animationState = false;
@@ -76,11 +80,12 @@ export class SirensComponent implements OnInit, OnDestroy {
     this.isTest = value;
     this.wss.testModeChange(value);
   }
-  testSirenChanged(e, siren) {
+  testSirenChanged(e, siren: Siren) {
     this.wss.changeSirenMute({
       name: siren.name,
       on: !!e.value,
       muted: siren.muted,
+      panelId: siren.panelId,
     });
   }
 }

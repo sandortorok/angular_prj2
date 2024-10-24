@@ -1,7 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { Panel, Prisma } from '@prisma/client';
 import { PrismaService } from 'src/databases/prisma.service';
-
+export type BatchPayload = {
+  count: number;
+};
 @Injectable()
 export class PanelService {
   constructor(private prisma: PrismaService) {}
@@ -40,6 +42,17 @@ export class PanelService {
   }): Promise<Panel> {
     const { where, data } = params;
     return this.prisma.panel.update({
+      data,
+      where,
+    });
+  }
+
+  async updatePanels(params: {
+    where: Prisma.PanelWhereInput;
+    data: Prisma.PanelUpdateInput;
+  }): Promise<BatchPayload> {
+    const { where, data } = params;
+    return this.prisma.panel.updateMany({
       data,
       where,
     });
