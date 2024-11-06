@@ -23,6 +23,8 @@ import {
   MatPaginatorIntl,
   MatPaginatorModule,
 } from '@angular/material/paginator';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { KwStopIconComponent } from './kw-stop-icon/kw-stop-icon.component';
 import { LoginComponent } from './pages/login/login.component';
@@ -32,7 +34,11 @@ import { AlarmComponent } from './pages/alarm/alarm.component';
 import { SensorCardComponent } from './pages/sensors/sensor-card/sensor-card.component';
 import { SensorsComponent } from './pages/sensors/sensors.component';
 import { SensorService } from './pages/sensors/sensor.service';
-import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { SensorHistoryService } from './pages/diagrams/sensor-history.service';
+import {
+  provideHttpClient,
+  withInterceptorsFromDi,
+} from '@angular/common/http';
 import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
 import { GaugeChartComponent } from './gauge-chart/gauge-chart.component';
 import { SensorDialogComponent } from './pages/sensors/gauge-dialog/gauge-dialog.component';
@@ -57,10 +63,13 @@ import { CreatePanelDialogComponent } from './pages/settings/create-panel-dialog
 import { DeletePanelDialogComponent } from './pages/settings/delete-panel-dialog/delete-panel-dialog.component';
 import { DiagramsComponent } from './pages/diagrams/diagrams.component';
 import { ChartComponent } from './pages/diagrams/chart/chart.component';
+import { provideMomentDateAdapter } from '@angular/material-moment-adapter';
 
 const config: SocketIoConfig = { url: 'http://localhost:3000', options: {} };
 
 const matModules = [
+  MatDatepickerModule,
+  MatNativeDateModule,
   MatIconModule,
   MatSidenavModule,
   MatToolbarModule,
@@ -78,47 +87,55 @@ const matModules = [
   MatSnackBarModule,
 ];
 
-@NgModule({ declarations: [
-        AppComponent,
-        SidenavComponent,
-        KwStopIconComponent,
-        LoginComponent,
-        HelpComponent,
-        SettingsComponent,
-        AlarmComponent,
-        SensorCardComponent,
-        SensorsComponent,
-        GaugeChartComponent,
-        SensorDialogComponent,
-        CreateSensorDialogComponent,
-        UpdateSensorDialogComponent,
-        DeleteSensorDialogComponent,
-        CreateSirenDialogComponent,
-        UpdateSirenDialogComponent,
-        DeleteSirenDialogComponent,
-        OnlyNumberDirective,
-        SortPipe,
-        SirensComponent,
-        AliveCanComponent,
-        ToggleButtonComponent,
-        MapComponent,
-        MapSvgComponent,
-        UpdatePanelDialogComponent,
-        CreatePanelDialogComponent,
-        DeletePanelDialogComponent,
-        DiagramsComponent,
-        ChartComponent,
-    ],
-    bootstrap: [AppComponent], imports: [BrowserModule,
-        AppRoutingModule,
-        BrowserAnimationsModule,
-        FormsModule,
-        ReactiveFormsModule,
-        SocketIoModule.forRoot(config),
-        ...matModules], providers: [
-        SensorService,
-        SirenService,
-        { provide: MatPaginatorIntl, useValue: getHunPaginatorIntl() },
-        provideHttpClient(withInterceptorsFromDi()),
-    ] })
+@NgModule({
+  declarations: [
+    AppComponent,
+    SidenavComponent,
+    KwStopIconComponent,
+    LoginComponent,
+    HelpComponent,
+    SettingsComponent,
+    AlarmComponent,
+    SensorCardComponent,
+    SensorsComponent,
+    GaugeChartComponent,
+    SensorDialogComponent,
+    CreateSensorDialogComponent,
+    UpdateSensorDialogComponent,
+    DeleteSensorDialogComponent,
+    CreateSirenDialogComponent,
+    UpdateSirenDialogComponent,
+    DeleteSirenDialogComponent,
+    OnlyNumberDirective,
+    SortPipe,
+    SirensComponent,
+    AliveCanComponent,
+    ToggleButtonComponent,
+    MapComponent,
+    MapSvgComponent,
+    UpdatePanelDialogComponent,
+    CreatePanelDialogComponent,
+    DeletePanelDialogComponent,
+    DiagramsComponent,
+    ChartComponent,
+  ],
+  bootstrap: [AppComponent],
+  imports: [
+    BrowserModule,
+    AppRoutingModule,
+    BrowserAnimationsModule,
+    FormsModule,
+    ReactiveFormsModule,
+    SocketIoModule.forRoot(config),
+    ...matModules,
+  ],
+  providers: [
+    SensorService,
+    SensorHistoryService,
+    SirenService,
+    { provide: MatPaginatorIntl, useValue: getHunPaginatorIntl() },
+    provideHttpClient(withInterceptorsFromDi()),
+    provideMomentDateAdapter(),
+  ],
+})
 export class AppModule {}

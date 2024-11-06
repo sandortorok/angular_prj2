@@ -7,3 +7,31 @@
     </mat-option>
   </mat-select>
 </mat-form-field>
+<h4>Dátum</h4>
+
+<div layout="row" div class="md-inline-form box">
+  <mat-form-field class="datepicker">
+    <mat-label>Dátum</mat-label>
+    <input matInput [matDatepicker]="picker" (dateChange)="dateChanged($event)" [value]="date">
+    <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+    <mat-datepicker #picker></mat-datepicker>
+  </mat-form-field>
+  <mat-form-field class="hourpicker" *ngIf="timeScale == 'hour'">
+    <mat-label>Óra</mat-label>
+    <input type="number" matInput name="value" placeholder="Óra" (change)="hourChanged($event.target)"
+      [(ngModel)]="hour" max="23" min="0">
+  </mat-form-field>
+
+  <mat-button-toggle-group name="fontStyle" aria-label="Font Style" style="margin-left:auto"
+    (change)="changeTimeScale($event.value)" [value]="timeScale">
+    <mat-button-toggle value="year">Év</mat-button-toggle>
+    <mat-button-toggle value="month">Hónap</mat-button-toggle>
+    <mat-button-toggle value="week">Hét</mat-button-toggle>
+    <mat-button-toggle value="day">Nap</mat-button-toggle>
+    <mat-button-toggle value="hour">Óra</mat-button-toggle>
+  </mat-button-toggle-group>
+
+</div>
+
+<app-chart [changedSensor]="selectedSensorId" [changedDate]="selectedDate" [changedHour]="selectedHour"
+  [changedScale]="selectedScale"></app-chart>
