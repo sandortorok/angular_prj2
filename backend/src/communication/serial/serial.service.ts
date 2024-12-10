@@ -51,7 +51,6 @@ export class SerialService {
           const fr = data.toString('hex').match(/.{1,2}/g);
           const panelId = parseInt(fr[7], 16);
           let raw = parseInt(fr[2], 16) + parseInt(fr[3], 16) * 256;
-          raw = randomIntFromInterval(100, 1000);
           const value = ppmConvert(raw);
           const address = parseInt(fr[0], 16);
           const newCan = fr[6] === 'f0' ? parseInt(fr[5], 16) : 0;
