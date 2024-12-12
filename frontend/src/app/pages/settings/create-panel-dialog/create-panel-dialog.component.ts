@@ -5,9 +5,10 @@ import { Panel } from '../../panels/panel.model';
 import { PanelService } from '../../panels/panel.service';
 
 @Component({
-  selector: 'app-create-panel-dialog',
-  templateUrl: './create-panel-dialog.component.html',
-  styleUrls: ['./create-panel-dialog.component.scss'],
+    selector: 'app-create-panel-dialog',
+    templateUrl: './create-panel-dialog.component.html',
+    styleUrls: ['./create-panel-dialog.component.scss'],
+    standalone: false
 })
 export class CreatePanelDialogComponent {
   panels: Panel[] = [];

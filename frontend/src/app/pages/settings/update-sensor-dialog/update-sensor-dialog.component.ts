@@ -5,9 +5,10 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Sensor } from '../../sensors/sensor.model';
 
 @Component({
-  selector: 'update-sensor-dialog',
-  styleUrls: ['update-sensor-dialog.component.scss'],
-  templateUrl: 'update-sensor-dialog.component.html',
+    selector: 'update-sensor-dialog',
+    styleUrls: ['update-sensor-dialog.component.scss'],
+    templateUrl: 'update-sensor-dialog.component.html',
+    standalone: false
 })
 export class UpdateSensorDialogComponent implements OnInit {
   sensors: Sensor[] = [];

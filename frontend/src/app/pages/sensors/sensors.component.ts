@@ -9,9 +9,10 @@ import { Subject, takeUntil } from 'rxjs';
 type OrderBy = 'name' | 'value' | 'address' | 'panelId';
 type AscDesc = 'asc' | 'desc';
 @Component({
-  selector: 'app-sensors',
-  templateUrl: './sensors.component.html',
-  styleUrls: ['./sensors.component.scss'],
+    selector: 'app-sensors',
+    templateUrl: './sensors.component.html',
+    styleUrls: ['./sensors.component.scss'],
+    standalone: false
 })
 export class SensorsComponent implements OnInit, OnDestroy {
   private ngUnsubscribe = new Subject<void>();

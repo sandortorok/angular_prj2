@@ -5,9 +5,10 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Panel } from '../../panels/panel.model';
 
 @Component({
-  selector: 'app-update-panel-dialog',
-  templateUrl: './update-panel-dialog.component.html',
-  styleUrls: ['./update-panel-dialog.component.scss'],
+    selector: 'app-update-panel-dialog',
+    templateUrl: './update-panel-dialog.component.html',
+    styleUrls: ['./update-panel-dialog.component.scss'],
+    standalone: false
 })
 export class UpdatePanelDialogComponent {
   constructor(

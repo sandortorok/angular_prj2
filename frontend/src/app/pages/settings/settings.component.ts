@@ -10,9 +10,10 @@ import { CreatePanelDialogComponent } from './create-panel-dialog/create-panel-d
 import { UpdatePanelDialogComponent } from './update-panel-dialog/update-panel-dialog.component';
 import { DeletePanelDialogComponent } from './delete-panel-dialog/delete-panel-dialog.component';
 @Component({
-  selector: 'app-settings',
-  templateUrl: './settings.component.html',
-  styleUrls: ['./settings.component.scss'],
+    selector: 'app-settings',
+    templateUrl: './settings.component.html',
+    styleUrls: ['./settings.component.scss'],
+    standalone: false
 })
 export class SettingsComponent {
   constructor(private dialog: MatDialog) {}

@@ -4,9 +4,10 @@ import { Sensor } from '../sensors/sensor.model';
 import { SensorService } from '../sensors/sensor.service';
 
 @Component({
-  selector: 'app-map',
-  templateUrl: './map.component.html',
-  styleUrls: ['./map.component.scss'],
+    selector: 'app-map',
+    templateUrl: './map.component.html',
+    styleUrls: ['./map.component.scss'],
+    standalone: false
 })
 export class MapComponent implements OnInit {
   sensors: Sensor[] = [];

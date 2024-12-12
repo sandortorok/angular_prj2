@@ -8,9 +8,10 @@ import { BreakpointObserver } from '@angular/cdk/layout';
 
 @UntilDestroy()
 @Component({
-  selector: 'app-sidenav',
-  templateUrl: './sidenav.component.html',
-  styleUrls: ['./sidenav.component.scss'],
+    selector: 'app-sidenav',
+    templateUrl: './sidenav.component.html',
+    styleUrls: ['./sidenav.component.scss'],
+    standalone: false
 })
 export class SidenavComponent implements OnInit, OnDestroy {
   @ViewChild(MatSidenav)

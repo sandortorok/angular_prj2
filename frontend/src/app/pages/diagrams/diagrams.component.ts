@@ -17,10 +17,11 @@ export const MY_FORMATS = {
 
 export type scale = 'hour' | 'day' | 'week' | 'month' | 'year';
 @Component({
-  selector: 'app-diagrams',
-  providers: [provideMomentDateAdapter(MY_FORMATS)],
-  templateUrl: './diagrams.component.html',
-  styleUrls: ['./diagrams.component.scss'],
+    selector: 'app-diagrams',
+    providers: [provideMomentDateAdapter(MY_FORMATS)],
+    templateUrl: './diagrams.component.html',
+    styleUrls: ['./diagrams.component.scss'],
+    standalone: false
 })
 export class DiagramsComponent {
   private ngUnsubscribe = new Subject<void>();

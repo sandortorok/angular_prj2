@@ -4,9 +4,10 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { SirenService } from '../../sirens/siren.service';
 
 @Component({
-  selector: 'create-siren-dialog',
-  styleUrls: ['create-siren-dialog.component.scss'],
-  templateUrl: 'create-siren-dialog.component.html',
+    selector: 'create-siren-dialog',
+    styleUrls: ['create-siren-dialog.component.scss'],
+    templateUrl: 'create-siren-dialog.component.html',
+    standalone: false
 })
 export class CreateSirenDialogComponent {
   submitted: boolean = false;

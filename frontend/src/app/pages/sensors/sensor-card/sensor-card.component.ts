@@ -12,9 +12,10 @@ import { Sensor } from '../sensor.model';
 import { SensorDialogComponent } from '../gauge-dialog/gauge-dialog.component';
 
 @Component({
-  selector: 'app-sensor',
-  templateUrl: './sensor-card.component.html',
-  styleUrls: ['./sensor-card.component.scss'],
+    selector: 'app-sensor',
+    templateUrl: './sensor-card.component.html',
+    styleUrls: ['./sensor-card.component.scss'],
+    standalone: false
 })
 export class SensorCardComponent {
   yellowMin = yellowMin;

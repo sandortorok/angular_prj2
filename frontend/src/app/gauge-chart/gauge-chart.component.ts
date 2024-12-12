@@ -2,9 +2,10 @@ import { Component, Input, OnInit, SimpleChanges } from '@angular/core';
 import Chart from 'chart.js/auto';
 
 @Component({
-  selector: 'app-gauge-chart',
-  templateUrl: './gauge-chart.component.html',
-  styleUrls: ['./gauge-chart.component.scss'],
+    selector: 'app-gauge-chart',
+    templateUrl: './gauge-chart.component.html',
+    styleUrls: ['./gauge-chart.component.scss'],
+    standalone: false
 })
 export class GaugeChartComponent implements OnInit {
   public chart;

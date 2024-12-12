@@ -2,9 +2,10 @@ import { Component, Input, SimpleChanges } from '@angular/core';
 import { Sensor, redMin, yellowMin } from '../../sensors/sensor.model';
 
 @Component({
-  selector: 'app-map-svg',
-  templateUrl: './map-svg.component.html',
-  styleUrls: ['./map-svg.component.scss'],
+    selector: 'app-map-svg',
+    templateUrl: './map-svg.component.html',
+    styleUrls: ['./map-svg.component.scss'],
+    standalone: false
 })
 export class MapSvgComponent {
   @Input() sensors: Sensor[] = [];

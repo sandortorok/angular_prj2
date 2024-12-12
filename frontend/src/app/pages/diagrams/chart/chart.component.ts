@@ -7,9 +7,10 @@ import { scale } from '../diagrams.component';
 import { SensorService } from '../../sensors/sensor.service';
 import { Sensor } from '../../sensors/sensor.model';
 @Component({
-  selector: 'app-chart',
-  templateUrl: './chart.component.html',
-  styleUrls: ['./chart.component.scss'],
+    selector: 'app-chart',
+    templateUrl: './chart.component.html',
+    styleUrls: ['./chart.component.scss'],
+    standalone: false
 })
 export class ChartComponent {
   constructor(

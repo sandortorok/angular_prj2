@@ -4,9 +4,10 @@ import { MatDialogRef } from '@angular/material/dialog';
 import { Sensor } from '../../sensors/sensor.model';
 
 @Component({
-  selector: 'delete-sensor-dialog',
-  styleUrls: ['delete-sensor-dialog.component.scss'],
-  templateUrl: 'delete-sensor-dialog.component.html',
+    selector: 'delete-sensor-dialog',
+    styleUrls: ['delete-sensor-dialog.component.scss'],
+    templateUrl: 'delete-sensor-dialog.component.html',
+    standalone: false
 })
 export class DeleteSensorDialogComponent implements OnInit {
   errorMessage?: string;

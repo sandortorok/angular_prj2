@@ -5,9 +5,10 @@ import { Siren } from '../../sirens/siren.model';
 import { SirenService } from '../../sirens/siren.service';
 
 @Component({
-  selector: 'update-siren-dialog',
-  styleUrls: ['update-siren-dialog.component.scss'],
-  templateUrl: 'update-siren-dialog.component.html',
+    selector: 'update-siren-dialog',
+    styleUrls: ['update-siren-dialog.component.scss'],
+    templateUrl: 'update-siren-dialog.component.html',
+    standalone: false
 })
 export class UpdateSirenDialogComponent implements OnInit {
   sirens: Siren[] = [];

@@ -4,9 +4,10 @@ import { PageEvent } from '@angular/material/paginator';
 import { WebsocketService } from 'src/app/communication/websocket.service';
 
 @Component({
-  selector: 'app-alarm',
-  templateUrl: './alarm.component.html',
-  styleUrls: ['./alarm.component.scss'],
+    selector: 'app-alarm',
+    templateUrl: './alarm.component.html',
+    styleUrls: ['./alarm.component.scss'],
+    standalone: false
 })
 export class AlarmComponent {
   // MatPaginator Output

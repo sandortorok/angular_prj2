@@ -8,9 +8,10 @@ import { PanelService } from '../../panels/panel.service';
 import { Panel } from '../../panels/panel.model';
 
 @Component({
-  selector: 'create-sensor-dialog',
-  styleUrls: ['create-sensor-dialog.component.scss'],
-  templateUrl: 'create-sensor-dialog.component.html',
+    selector: 'create-sensor-dialog',
+    styleUrls: ['create-sensor-dialog.component.scss'],
+    templateUrl: 'create-sensor-dialog.component.html',
+    standalone: false
 })
 export class CreateSensorDialogComponent {
   panels: Panel[] = [];

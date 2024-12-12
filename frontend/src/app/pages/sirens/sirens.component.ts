@@ -7,10 +7,11 @@ import { Siren } from './siren.model';
 import { AuthService } from '../login/services/auth.service';
 
 @Component({
-  selector: 'app-sirens',
-  templateUrl: './sirens.component.html',
-  styleUrls: ['./sirens.component.scss'],
-  animations: [swingAnimation()],
+    selector: 'app-sirens',
+    templateUrl: './sirens.component.html',
+    styleUrls: ['./sirens.component.scss'],
+    animations: [swingAnimation()],
+    standalone: false
 })
 export class SirensComponent implements OnInit, OnDestroy {
   constructor(
