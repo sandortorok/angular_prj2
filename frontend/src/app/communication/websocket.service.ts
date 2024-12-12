@@ -25,8 +25,8 @@ export class WebsocketService {
     isOn: boolean;
   }> = new BehaviorSubject({ sirenName: '', isOn: Boolean(false) });
 
-  public canAddressChange$: BehaviorSubject<Array<string>> =
-    new BehaviorSubject<string[]>([]);
+  public canAddressChange$: BehaviorSubject<{ [key: string]: Array<string> }> =
+    new BehaviorSubject({});
 
   constructor() {
     this.wsSubscribe();
@@ -68,8 +68,8 @@ export class WebsocketService {
         this.sensorChange$.next(message);
       }
     );
-    this.socket.on('canAddresses', (message: Array<string>) => {
-      this.canAddressChange$.next(message);
+    this.socket.on('canAddresses', (message: string) => {
+      this.canAddressChange$.next(JSON.parse(message));
     });
     this.socket.on(
       'errorMessage',

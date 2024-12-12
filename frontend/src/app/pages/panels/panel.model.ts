@@ -7,4 +7,5 @@ export interface Panel {
   address: Number;
   sensors?: Sensor[];
   sirens?: Siren[];
+  name?: string;
 }

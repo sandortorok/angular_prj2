@@ -48,6 +48,129 @@ export class LogicService implements OnModuleInit {
     this.dataSubject.asObservable();
 
   onModuleInit() {
+    // setInterval(() => {
+    //   this.dataSubject.next({
+    //     newCan: 1,
+    //     address: 1,
+    //     panelId: 1,
+    //     value: 0.4,
+    //     raw: 200,
+    //     path: '/dev/ttyUSB0',
+    //   });
+    //   this.dataSubject.next({
+    //     newCan: 2,
+    //     address: 1,
+    //     panelId: 1,
+    //     value: 0.4,
+    //     raw: 200,
+    //     path: '/dev/ttyUSB0',
+    //   });
+    //   this.dataSubject.next({
+    //     newCan: 3,
+    //     address: 1,
+    //     panelId: 1,
+    //     value: 0.4,
+    //     raw: 200,
+    //     path: '/dev/ttyUSB0',
+    //   });
+    //   this.dataSubject.next({
+    //     newCan: 4,
+    //     address: 1,
+    //     panelId: 1,
+    //     value: 0.4,
+    //     raw: 200,
+    //     path: '/dev/ttyUSB0',
+    //   });
+    //   this.dataSubject.next({
+    //     newCan: 5,
+    //     address: 1,
+    //     panelId: 1,
+    //     value: 0.4,
+    //     raw: 200,
+    //     path: '/dev/ttyUSB0',
+    //   });
+    //   this.dataSubject.next({
+    //     newCan: 6,
+    //     address: 1,
+    //     panelId: 1,
+    //     value: 0.4,
+    //     raw: 200,
+    //     path: '/dev/ttyUSB0',
+    //   });
+    //   this.dataSubject.next({
+    //     newCan: 7,
+    //     address: 1,
+    //     panelId: 1,
+    //     value: 0.4,
+    //     raw: 200,
+    //     path: '/dev/ttyUSB0',
+    //   });
+    //   this.dataSubject.next({
+    //     newCan: 8,
+    //     address: 1,
+    //     panelId: 1,
+    //     value: 0.4,
+    //     raw: 200,
+    //     path: '/dev/ttyUSB0',
+    //   });
+    //   this.dataSubject.next({
+    //     newCan: 9,
+    //     address: 1,
+    //     panelId: 1,
+    //     value: 0.4,
+    //     raw: 200,
+    //     path: '/dev/ttyUSB0',
+    //   });
+    //   this.dataSubject.next({
+    //     newCan: 10,
+    //     address: 2,
+    //     panelId: 1,
+    //     value: 0.4,
+    //     raw: 200,
+    //     path: '/dev/ttyUSB0',
+    //   });
+    //   this.dataSubject.next({
+    //     newCan: 11,
+    //     address: 2,
+    //     panelId: 1,
+    //     value: 0.4,
+    //     raw: 200,
+    //     path: '/dev/ttyUSB0',
+    //   });
+    //   this.dataSubject.next({
+    //     newCan: 12,
+    //     address: 2,
+    //     panelId: 1,
+    //     value: 0.4,
+    //     raw: 200,
+    //     path: '/dev/ttyUSB0',
+    //   });
+    //   this.dataSubject.next({
+    //     newCan: 13,
+    //     address: 2,
+    //     panelId: 1,
+    //     value: 0.4,
+    //     raw: 200,
+    //     path: '/dev/ttyUSB0',
+    //   });
+    //   this.dataSubject.next({
+    //     newCan: 14,
+    //     address: 2,
+    //     panelId: 1,
+    //     value: 0.4,
+    //     raw: 200,
+    //     path: '/dev/ttyUSB0',
+    //   });
+    //   this.dataSubject.next({
+    //     newCan: 1,
+    //     address: 1,
+    //     panelId: 2,
+    //     value: 0.4,
+    //     raw: 200,
+    //     path: '/dev/ttyUSB0',
+    //   });
+    // }, 1000);
+
     this.testModeService.getMode().then((mode) => {
       this.testModeSubject.next(mode.isOn);
     });
@@ -94,17 +217,25 @@ export class LogicService implements OnModuleInit {
   }
   handleDataIncome() {
     this.dataMessage$.subscribe((data) => {
-      if (this.aliveCanAddresses[`${data.panelId}`] == undefined)
-        this.aliveCanAddresses[`${data.panelId}`] = {};
+      if (this.aliveCanAddresses[data.panelId] == undefined)
+        this.aliveCanAddresses[data.panelId] = {};
 
-      this.aliveCanAddresses[`${data.panelId}`][`${data.newCan}`] = new Date();
+      this.aliveCanAddresses[data.panelId][data.newCan] = new Date();
       this.latestValues[`${data.address}`] = data.value;
       this.wsService.sendAmmoniaValue(data);
-      this.wsService.sendAliveAddresses(Object.keys(this.aliveCanAddresses));
+      this.wsService.sendAliveAddresses(
+        this.convertAliveAddresses(this.aliveCanAddresses),
+      );
       this.sensorDataService.addData(data);
     });
   }
-
+  convertAliveAddresses(obj) {
+    let returnObj = {};
+    Object.keys(obj).forEach((panelId) => {
+      returnObj[panelId] = [...Object.keys(obj[panelId])];
+    });
+    return JSON.stringify(returnObj);
+  }
   async sirenCheck() {
     const sirens = this.sirenSubject.getValue();
     const isTestMode = this.testModeSubject.getValue();
@@ -167,7 +298,9 @@ export class LogicService implements OnModuleInit {
         },
       );
     });
-    this.wsService.sendAliveAddresses(Object.keys(this.aliveCanAddresses));
+    this.wsService.sendAliveAddresses(
+      this.convertAliveAddresses(this.aliveCanAddresses),
+    );
   }
   resetAddresses() {
     Object.keys(this.aliveCanAddresses).forEach((panelId) => {
@@ -177,7 +310,9 @@ export class LogicService implements OnModuleInit {
         },
       );
     });
-    this.wsService.sendAliveAddresses(Object.keys(this.aliveCanAddresses));
+    this.wsService.sendAliveAddresses(
+      this.convertAliveAddresses(this.aliveCanAddresses),
+    );
   }
   async updateSiren(siren: Siren) {
     const sirens = this.sirenSubject.getValue();

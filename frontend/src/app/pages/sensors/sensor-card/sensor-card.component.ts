@@ -12,10 +12,10 @@ import { Sensor } from '../sensor.model';
 import { SensorDialogComponent } from '../gauge-dialog/gauge-dialog.component';
 
 @Component({
-    selector: 'app-sensor',
-    templateUrl: './sensor-card.component.html',
-    styleUrls: ['./sensor-card.component.scss'],
-    standalone: false
+  selector: 'app-sensor',
+  templateUrl: './sensor-card.component.html',
+  styleUrls: ['./sensor-card.component.scss'],
+  standalone: false,
 })
 export class SensorCardComponent {
   yellowMin = yellowMin;
@@ -32,6 +32,7 @@ export class SensorCardComponent {
   @Input() value: number | undefined;
   @Input() raw: number | undefined;
   @Input() showRaw: boolean = false;
+  @Input() pName: string | undefined;
   @Output() hornChanged = new EventEmitter<boolean>();
   changeHorn() {
     this.sensor.horn = !this.sensor.horn;

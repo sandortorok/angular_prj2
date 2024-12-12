@@ -7,11 +7,18 @@
   </h1>
 </div>
 <div style="margin-bottom: 20px; display: flex; align-items: center">
-  <button style="margin-right: 20px" mat-stroked-button [matMenuTriggerFor]="menu">
+  <button
+    style="margin-right: 20px"
+    mat-stroked-button
+    [matMenuTriggerFor]="menu"
+  >
     <mat-icon>filter_list</mat-icon>
     Rendezés
   </button>
-  <mat-button-toggle-group [(ngModel)]="chosenAscDesc" style="height: 32px; align-items: center">
+  <mat-button-toggle-group
+    [(ngModel)]="chosenAscDesc"
+    style="height: 32px; align-items: center"
+  >
     <mat-button-toggle value="asc">
       <mat-icon> keyboard_arrow_up </mat-icon>
     </mat-button-toggle>
@@ -19,22 +26,40 @@
       <mat-icon> keyboard_arrow_down </mat-icon>
     </mat-button-toggle>
   </mat-button-toggle-group>
-  <button mat-stroked-button style="margin-left: 20px" [ngClass]="showRaw ? 'clicked' : ''"
-    (click)="showRaw = !showRaw">
+  <button
+    mat-stroked-button
+    style="margin-left: 20px"
+    [ngClass]="showRaw ? 'clicked' : ''"
+    (click)="showRaw = !showRaw"
+  >
     Nyers érték
     <mat-icon>build</mat-icon>
   </button>
 </div>
 <div style="display: flex; gap: 20px; flex-wrap: wrap">
-  <app-sensor *ngFor="let sensor of sensors | sort : chosenAscDesc : chosenOrder" [sensor]="sensor"
-    [value]="sensor.value" [raw]="sensor.raw" [showRaw]="showRaw"
-    (hornChanged)="updateHorn(sensor.id!, $event)"></app-sensor>
+  <app-sensor
+    *ngFor="let sensor of sensors | sort : chosenAscDesc : chosenOrder"
+    [sensor]="sensor"
+    [value]="sensor.value"
+    [raw]="sensor.raw"
+    [showRaw]="showRaw"
+    [pName]="getPanelName(sensor.panelId)"
+    (hornChanged)="updateHorn(sensor.id!, $event)"
+  ></app-sensor>
 </div>
 
 <mat-menu #menu="matMenu">
-  <mat-radio-group aria-labelledby="example-radio-group-label" class="example-radio-group" [(ngModel)]="chosenOrder">
-    <mat-radio-button color="primary" class="example-radio-button" *ngFor="let order of orderOptions"
-      [value]="order.type">
+  <mat-radio-group
+    aria-labelledby="example-radio-group-label"
+    class="example-radio-group"
+    [(ngModel)]="chosenOrder"
+  >
+    <mat-radio-button
+      color="primary"
+      class="example-radio-button"
+      *ngFor="let order of orderOptions"
+      [value]="order.type"
+    >
       {{ order.name }}
     </mat-radio-button>
   </mat-radio-group>

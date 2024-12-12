@@ -56,6 +56,7 @@ model Panel {
   id Int @default(autoincrement()) @id
   path String
   address Int @unique
+  name String?
   sensors Sensor[]
   sirens Siren[]
 }

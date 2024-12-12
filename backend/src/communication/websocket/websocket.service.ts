@@ -13,7 +13,8 @@ export class WebsocketService {
     if (!this.socket) return;
     this.socket.emit('onMessage', output);
   }
-  sendAliveAddresses(output: Array<string>) {
+  sendAliveAddresses(output: string) {
+    console.log(output);
     if (!this.socket) return;
     this.socket.emit('canAddresses', output);
   }
