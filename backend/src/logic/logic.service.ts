@@ -94,7 +94,10 @@ export class LogicService implements OnModuleInit {
   }
   handleDataIncome() {
     this.dataMessage$.subscribe((data) => {
-      this.aliveCanAddresses[`${data.newCan}`] = new Date();
+      if (this.aliveCanAddresses[`${data.panelId}`] == undefined)
+        this.aliveCanAddresses[`${data.panelId}`] = {};
+
+      this.aliveCanAddresses[`${data.panelId}`][`${data.newCan}`] = new Date();
       this.latestValues[`${data.address}`] = data.value;
       this.wsService.sendAmmoniaValue(data);
       this.wsService.sendAliveAddresses(Object.keys(this.aliveCanAddresses));
@@ -155,16 +158,24 @@ export class LogicService implements OnModuleInit {
     }, 10000);
   }
   canAliveCheck() {
-    Object.keys(this.aliveCanAddresses).forEach((address: string) => {
-      if (isOld(this.aliveCanAddresses[address])) {
-        delete this.aliveCanAddresses[address];
-      }
+    Object.keys(this.aliveCanAddresses).forEach((panelId) => {
+      Object.keys(this.aliveCanAddresses[panelId]).forEach(
+        (address: string) => {
+          if (isOld(this.aliveCanAddresses[panelId][address])) {
+            delete this.aliveCanAddresses[panelId][address];
+          }
+        },
+      );
     });
     this.wsService.sendAliveAddresses(Object.keys(this.aliveCanAddresses));
   }
   resetAddresses() {
-    Object.keys(this.aliveCanAddresses).forEach((address: string) => {
-      delete this.aliveCanAddresses[address];
+    Object.keys(this.aliveCanAddresses).forEach((panelId) => {
+      Object.keys(this.aliveCanAddresses[panelId]).forEach(
+        (address: string) => {
+          delete this.aliveCanAddresses[panelId][address];
+        },
+      );
     });
     this.wsService.sendAliveAddresses(Object.keys(this.aliveCanAddresses));
   }

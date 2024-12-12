@@ -1,9 +1,13 @@
 <mat-toolbar class="mat-elevation-z8">
-  <button mat-icon-button *ngIf="sidenav.mode === 'over'" (click)="sidenav.toggle()">
+  <button
+    mat-icon-button
+    *ngIf="sidenav.mode === 'over'"
+    (click)="sidenav.toggle()"
+  >
     <mat-icon *ngIf="!sidenav.opened"> menu </mat-icon>
     <mat-icon *ngIf="sidenav.opened"> close </mat-icon>
   </button>
-  <h2>AMMÓNIA ÉRZÉKELÉS</h2>
+  <h2>Panír 3 Ammónia Érzékelők</h2>
 </mat-toolbar>
 
 <mat-sidenav-container>
@@ -21,15 +25,30 @@
 
     <mat-divider *ngIf="loggedIn"></mat-divider>
 
-    <button *ngIf="loggedIn" mat-button class="menu-button" routerLink="/sensors">
+    <button
+      *ngIf="loggedIn"
+      mat-button
+      class="menu-button"
+      routerLink="/sensors"
+    >
       <mat-icon>wifi_tethering</mat-icon>
       <span>Szenzorok</span>
     </button>
-    <button *ngIf="loggedIn" mat-button class="menu-button" routerLink="/diagrams">
+    <button
+      *ngIf="loggedIn"
+      mat-button
+      class="menu-button"
+      routerLink="/diagrams"
+    >
       <mat-icon>show_chart</mat-icon>
       <span>Diagramok</span>
     </button>
-    <button *ngIf="loggedIn" mat-button class="menu-button" routerLink="/sirens">
+    <button
+      *ngIf="loggedIn"
+      mat-button
+      class="menu-button"
+      routerLink="/sirens"
+    >
       <mat-icon>notifications_none</mat-icon>
       <span>Kürtök</span>
     </button>
@@ -41,7 +60,12 @@
       <mat-icon>alarm</mat-icon>
       <span>Riasztások</span>
     </button>
-    <button *ngIf="isAdmin" mat-button class="menu-button" routerLink="/settings">
+    <button
+      *ngIf="isAdmin"
+      mat-button
+      class="menu-button"
+      routerLink="/settings"
+    >
       <mat-icon>settings</mat-icon>
       <span>Beállítások</span>
     </button>
