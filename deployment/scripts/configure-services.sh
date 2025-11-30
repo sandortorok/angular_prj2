@@ -149,12 +149,30 @@ pm2 save
 log "Configuring PM2 to start on boot..."
 if [ -n "$CURRENT_USER" ] && [ "$CURRENT_USER" != "root" ]; then
   # Generate startup script for non-root user
-  STARTUP_CMD=$(pm2 startup systemd -u "${CURRENT_USER}" --hp "/home/${CURRENT_USER}" | grep "sudo env")
-  if [ -n "$STARTUP_CMD" ]; then
-    eval "$STARTUP_CMD"
+  log "Setting up PM2 startup for user: ${CURRENT_USER}"
+
+  # Temporarily disable exit on error for PM2 startup
+  set +e
+  STARTUP_OUTPUT=$(pm2 startup systemd -u "${CURRENT_USER}" --hp "/home/${CURRENT_USER}" 2>&1)
+  STARTUP_EXIT_CODE=$?
+  set -e
+
+  if [ $STARTUP_EXIT_CODE -eq 0 ]; then
+    # Extract and execute the sudo command
+    STARTUP_CMD=$(echo "$STARTUP_OUTPUT" | grep "sudo env" || echo "")
+    if [ -n "$STARTUP_CMD" ]; then
+      log "Executing PM2 startup command..."
+      eval "$STARTUP_CMD" || warning "PM2 startup command failed, but continuing..."
+    else
+      log "PM2 startup already configured or no command needed"
+    fi
+  else
+    warning "PM2 startup returned non-zero exit code, but continuing..."
+    log "PM2 startup output: $STARTUP_OUTPUT"
   fi
 else
-  pm2 startup systemd
+  warning "Running as root, PM2 startup configuration may not work correctly"
+  pm2 startup systemd || warning "PM2 startup failed, but continuing..."
 fi
 
 log "PM2 configured and running"
