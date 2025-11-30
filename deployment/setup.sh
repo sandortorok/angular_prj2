@@ -156,7 +156,7 @@ info "Generated MySQL root password (stored in /root/.mysql_deployment_credentia
 FORCE_FRONTEND_REBUILD=false
 if [ -f "$STATE_FILE" ]; then
   warning "Existing deployment detected!"
-  PREVIOUS_IP=$(grep "^INITIAL_IP_ADDRESS=" "$STATE_FILE" 2>/dev/null | cut -d= -f2)
+  PREVIOUS_IP=$(grep "^INITIAL_IP_ADDRESS=" "$STATE_FILE" 2>/dev/null | cut -d= -f2 || echo "")
 
   if [ -n "$PREVIOUS_IP" ] && [ "$PREVIOUS_IP" != "$IP_ADDRESS" ]; then
     info "IP address changed from $PREVIOUS_IP to $IP_ADDRESS"
