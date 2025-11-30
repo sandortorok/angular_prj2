@@ -60,13 +60,33 @@ log "Creating database '${DB_NAME}'..."
 mysql -u root -p"${MYSQL_ROOT_PASS}" -e "CREATE DATABASE IF NOT EXISTS \`${DB_NAME}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
 log "Database created successfully"
 
-# Import dump
+# Import base schema (structure only)
 if [ -f "${BACKEND_PATH}/dumps/dump.sql" ]; then
-  log "Importing database dump..."
+  log "Importing base database schema..."
+  # Import only the structure (CREATE TABLE statements)
   mysql -u root -p"${MYSQL_ROOT_PASS}" "${DB_NAME}" < "${BACKEND_PATH}/dumps/dump.sql"
-  log "Database dump imported successfully"
+  log "Base schema imported successfully"
 else
   warning "Database dump not found at ${BACKEND_PATH}/dumps/dump.sql, skipping import"
+fi
+
+# Generate and import custom configuration
+if [ -n "$PANEL_COUNT" ] && [ -n "$SENSORS_PER_PANEL" ]; then
+  log "Generating custom database configuration..."
+  CUSTOM_SQL_FILE="/tmp/custom-db-config.sql"
+
+  # Source the generate script
+  source "$(dirname "$0")/generate-database-config.sh" "$APP_NAME" "$PANEL_COUNT" "$SENSORS_PER_PANEL" "$CUSTOM_SQL_FILE"
+
+  log "Importing custom configuration..."
+  mysql -u root -p"${MYSQL_ROOT_PASS}" "${DB_NAME}" < "$CUSTOM_SQL_FILE"
+
+  # Cleanup
+  rm -f "$CUSTOM_SQL_FILE"
+
+  log "Custom database configuration imported successfully"
+else
+  warning "Panel/Sensor configuration not provided, using default dump data"
 fi
 
 # Verify database setup

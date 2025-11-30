@@ -38,6 +38,26 @@ export const environment = {
 };
 EOF
 
+# Update application name in source files (before build)
+if [ -n "$APP_NAME" ]; then
+  log "Updating application name to: ${APP_NAME}"
+
+  # Backup original files (only once)
+  if [ ! -f src/index.html.original ]; then
+    cp src/index.html src/index.html.original
+  fi
+  if [ ! -f src/app/sidenav/sidenav.component.html.original ]; then
+    cp src/app/sidenav/sidenav.component.html src/app/sidenav/sidenav.component.html.original
+  fi
+
+  # Update index.html title
+  sed -i "s|<title>.*</title>|<title>${APP_NAME}</title>|" src/index.html
+
+  # Update sidenav header (replace "Panír 3 Ammónia Érzékelők" or similar)
+  # This will replace any <h2> content in sidenav with the app name
+  sed -i "s|<h2>.*Érzékelők</h2>|<h2>${APP_NAME} Érzékelők</h2>|" src/app/sidenav/sidenav.component.html
+fi
+
 # Install dependencies
 log "Installing frontend dependencies..."
 log "This may take several minutes on Raspberry Pi..."

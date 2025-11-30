@@ -4,9 +4,45 @@
 # Version: 1.0
 # Description: One-command setup for Angular 19 + NestJS IoT monitoring app
 #
+# Usage:
+#   sudo bash deployment/setup.sh           # Normal deployment
+#   sudo bash deployment/setup.sh --rebuild # Force rebuild frontend & backend
+#   sudo bash deployment/setup.sh --clean   # Clean state and redeploy everything
+#
 
 set -e  # Exit on error
 set -o pipefail  # Catch errors in pipes
+
+# ================================
+# Parse Arguments
+# ================================
+FORCE_REBUILD=false
+CLEAN_STATE=false
+
+for arg in "$@"; do
+  case $arg in
+    --rebuild)
+      FORCE_REBUILD=true
+      shift
+      ;;
+    --clean)
+      CLEAN_STATE=true
+      shift
+      ;;
+    --help)
+      echo "Usage: sudo bash deployment/setup.sh [OPTIONS]"
+      echo ""
+      echo "Options:"
+      echo "  --rebuild    Force rebuild frontend and backend"
+      echo "  --clean      Clean all state and redeploy everything"
+      echo "  --help       Show this help message"
+      exit 0
+      ;;
+    *)
+      # Unknown option
+      ;;
+  esac
+done
 
 # ================================
 # Configuration
@@ -118,12 +154,40 @@ log "Pre-flight checks passed ✓"
 echo ""
 
 # ================================
+# Handle Clean State Flag
+# ================================
+if [ "$CLEAN_STATE" = true ]; then
+  warning "Clean state mode enabled - removing deployment state file"
+  rm -f "$STATE_FILE"
+  info "State file removed. Starting fresh deployment..."
+  echo ""
+fi
+
+# ================================
+# Handle Rebuild Flag
+# ================================
+if [ "$FORCE_REBUILD" = true ]; then
+  info "Force rebuild mode enabled - frontend and backend will be rebuilt"
+  if [ -f "$STATE_FILE" ]; then
+    # Remove build-related state flags
+    sed -i '/^FRONTEND_DEPLOYED=/d' "$STATE_FILE" 2>/dev/null || true
+    sed -i '/^BACKEND_BUILT=/d' "$STATE_FILE" 2>/dev/null || true
+    info "Build state flags cleared"
+  fi
+  echo ""
+fi
+
+# ================================
 # Interactive Configuration
 # ================================
 echo "╔═══════════════════════════════════════════════════════════╗"
 echo "║                  CONFIGURATION                            ║"
 echo "╚═══════════════════════════════════════════════════════════╝"
 echo ""
+
+# Get application name (for frontend title)
+read -p "Enter the application name [IoT Monitoring]: " APP_NAME
+APP_NAME=${APP_NAME:-IoT Monitoring}
 
 # Get IP address
 while true; do
@@ -132,21 +196,54 @@ while true; do
 
   # Validate IP format
   if [[ $IP_ADDRESS =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]]; then
-    echo ""
-    echo "Configuration Summary:"
-    echo "  - Backend API: http://${IP_ADDRESS}:3000"
-    echo "  - Frontend:    http://${IP_ADDRESS}"
-    echo "  - Database:    nest-nh3 (MySQL)"
-    echo ""
-    read -p "Is this correct? (y/n): " -n 1 -r
-    echo
-    if [[ $REPLY =~ ^[Yy]$ ]]; then
-      break
-    fi
+    break
   else
     error "Invalid IP address format. Please try again."
   fi
 done
+
+# Get panel configuration
+while true; do
+  read -p "Enter number of panels [2]: " PANEL_COUNT
+  PANEL_COUNT=${PANEL_COUNT:-2}
+  if [[ $PANEL_COUNT =~ ^[0-9]+$ ]] && [ $PANEL_COUNT -gt 0 ]; then
+    break
+  else
+    error "Please enter a valid positive number."
+  fi
+done
+
+# Get sensors per panel
+while true; do
+  read -p "Enter number of sensors per panel [37]: " SENSORS_PER_PANEL
+  SENSORS_PER_PANEL=${SENSORS_PER_PANEL:-37}
+  if [[ $SENSORS_PER_PANEL =~ ^[0-9]+$ ]] && [ $SENSORS_PER_PANEL -gt 0 ]; then
+    break
+  else
+    error "Please enter a valid positive number."
+  fi
+done
+
+# Calculate totals
+TOTAL_SENSORS=$((PANEL_COUNT * SENSORS_PER_PANEL))
+
+# Display configuration summary
+echo ""
+echo "Configuration Summary:"
+echo "  - Application name: ${APP_NAME}"
+echo "  - Backend API:      http://${IP_ADDRESS}:3000"
+echo "  - Frontend:         http://${IP_ADDRESS}"
+echo "  - Database:         nest-nh3 (MySQL)"
+echo "  - Panels:           ${PANEL_COUNT}"
+echo "  - Sensors/Panel:    ${SENSORS_PER_PANEL}"
+echo "  - Total Sensors:    ${TOTAL_SENSORS}"
+echo ""
+read -p "Is this configuration correct? (y/n): " -n 1 -r
+echo
+if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+  error "Configuration cancelled. Please run the script again."
+  exit 1
+fi
 
 # Generate MySQL root password
 MYSQL_ROOT_PASS=$(openssl rand -base64 16 2>/dev/null || date +%s | sha256sum | base64 | head -c 16)
@@ -177,8 +274,9 @@ log "Application root: $APP_ROOT"
 log "Log file: $LOG_FILE"
 echo ""
 
-# Export paths for subscripts
+# Export paths and configuration for subscripts
 export APP_ROOT FRONTEND_PATH BACKEND_PATH STATE_FILE
+export APP_NAME IP_ADDRESS PANEL_COUNT SENSORS_PER_PANEL
 
 # ================================
 # Phase 1: Install Dependencies

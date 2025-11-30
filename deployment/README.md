@@ -116,8 +116,32 @@ sudo reboot
 
 Ez a fő script, ami az első telepítéshez használandó.
 
+#### Alap használat
 ```bash
 sudo bash deployment/setup.sh
+```
+
+#### Opciók
+
+**`--rebuild` - Újra build-elés**
+```bash
+sudo bash deployment/setup.sh --rebuild
+```
+- Frontend és backend újra build-elése
+- Adatbázis és más szolgáltatások érintetlenek maradnak
+- Hasznos ha módosítottad a kódot
+
+**`--clean` - Teljes tiszta telepítés**
+```bash
+sudo bash deployment/setup.sh --clean
+```
+- Törli az összes state-et
+- Minden lépést újra futtat (beleértve database-t is!)
+- Óvatosan használd - ADATVESZTÉS lehet!
+
+**`--help` - Súgó**
+```bash
+sudo bash deployment/setup.sh --help
 ```
 
 **Mit csinál?**
