@@ -76,8 +76,15 @@ if [ -n "$PANEL_COUNT" ] && [ -n "$SENSORS_PER_PANEL" ]; then
   CUSTOM_SQL_FILE="/tmp/custom-db-config.sql"
 
   # Source the generate script
-  SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-  source "${SCRIPT_DIR}/generate-database-config.sh" "$APP_NAME" "$PANEL_COUNT" "$SENSORS_PER_PANEL" "$CUSTOM_SQL_FILE"
+  SETUP_SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+  GENERATE_SCRIPT="${SETUP_SCRIPT_DIR}/generate-database-config.sh"
+
+  if [ ! -f "$GENERATE_SCRIPT" ]; then
+    error "Generate script not found at: $GENERATE_SCRIPT"
+    exit 1
+  fi
+
+  source "$GENERATE_SCRIPT" "$APP_NAME" "$PANEL_COUNT" "$SENSORS_PER_PANEL" "$CUSTOM_SQL_FILE"
 
   log "Importing custom configuration..."
   mysql -u root -p"${MYSQL_ROOT_PASS}" "${DB_NAME}" < "$CUSTOM_SQL_FILE"
