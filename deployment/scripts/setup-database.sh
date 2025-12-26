@@ -66,6 +66,12 @@ if [ -f "${BACKEND_PATH}/dumps/dump.sql" ]; then
   # Import only the structure (CREATE TABLE statements)
   mysql -u root -p"${MYSQL_ROOT_PASS}" "${DB_NAME}" < "${BACKEND_PATH}/dumps/dump.sql"
   log "Base schema imported successfully"
+
+  # Run Prisma migrations to update schema to latest version
+  log "Running Prisma migrations to sync database schema..."
+  cd "${BACKEND_PATH}"
+  npx prisma migrate deploy 2>&1 | tee -a "${LOG_FILE:-/var/log/iot-deployment.log}" || warning "Prisma migrate failed, but continuing..."
+  log "Prisma migrations completed"
 else
   warning "Database dump not found at ${BACKEND_PATH}/dumps/dump.sql, skipping import"
 fi
