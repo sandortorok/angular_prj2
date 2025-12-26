@@ -25,12 +25,15 @@ log "  Sensors per panel: ${SENSORS_PER_PANEL}"
 cat > "$OUTPUT_FILE" << 'EOF'
 -- Custom Generated Database Configuration
 
--- Clear existing data
+-- Clear existing data (respecting foreign key constraints)
+-- Delete child tables first
+DELETE FROM SensorHistory;
 DELETE FROM Sensor;
 DELETE FROM Panel;
 DELETE FROM Siren;
 
 -- Reset auto-increment
+ALTER TABLE SensorHistory AUTO_INCREMENT = 1;
 ALTER TABLE Sensor AUTO_INCREMENT = 1;
 ALTER TABLE Panel AUTO_INCREMENT = 1;
 ALTER TABLE Siren AUTO_INCREMENT = 1;
