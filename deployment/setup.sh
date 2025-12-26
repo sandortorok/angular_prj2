@@ -213,19 +213,25 @@ while true; do
   fi
 done
 
-# Get sensors per panel
-while true; do
-  read -p "Enter number of sensors per panel [37]: " SENSORS_PER_PANEL
-  SENSORS_PER_PANEL=${SENSORS_PER_PANEL:-37}
-  if [[ $SENSORS_PER_PANEL =~ ^[0-9]+$ ]] && [ $SENSORS_PER_PANEL -gt 0 ]; then
-    break
-  else
-    error "Please enter a valid positive number."
-  fi
-done
+# Get sensors per panel (individual counts)
+echo ""
+echo "Configure sensors for each panel:"
+PANEL_SENSOR_COUNTS=()
+TOTAL_SENSORS=0
 
-# Calculate totals
-TOTAL_SENSORS=$((PANEL_COUNT * SENSORS_PER_PANEL))
+for ((i=1; i<=PANEL_COUNT; i++)); do
+  while true; do
+    read -p "  Panel ${i}: Enter number of sensors [37]: " SENSOR_COUNT
+    SENSOR_COUNT=${SENSOR_COUNT:-37}
+    if [[ $SENSOR_COUNT =~ ^[0-9]+$ ]] && [ $SENSOR_COUNT -gt 0 ]; then
+      PANEL_SENSOR_COUNTS+=("$SENSOR_COUNT")
+      TOTAL_SENSORS=$((TOTAL_SENSORS + SENSOR_COUNT))
+      break
+    else
+      error "Please enter a valid positive number."
+    fi
+  done
+done
 
 # Display configuration summary
 echo ""
@@ -235,7 +241,9 @@ echo "  - Backend API:      http://${IP_ADDRESS}:3000"
 echo "  - Frontend:         http://${IP_ADDRESS}"
 echo "  - Database:         nest-nh3 (MySQL)"
 echo "  - Panels:           ${PANEL_COUNT}"
-echo "  - Sensors/Panel:    ${SENSORS_PER_PANEL}"
+for ((i=1; i<=PANEL_COUNT; i++)); do
+  echo "    - Panel ${i}:     ${PANEL_SENSOR_COUNTS[$((i-1))]} sensors"
+done
 echo "  - Total Sensors:    ${TOTAL_SENSORS}"
 echo ""
 read -p "Is this configuration correct? (y/n): " -n 1 -r
@@ -281,7 +289,9 @@ echo ""
 
 # Export paths and configuration for subscripts
 export APP_ROOT FRONTEND_PATH BACKEND_PATH STATE_FILE
-export APP_NAME IP_ADDRESS PANEL_COUNT SENSORS_PER_PANEL
+export APP_NAME IP_ADDRESS PANEL_COUNT
+# Export panel sensor counts as a space-separated string
+export PANEL_SENSOR_COUNTS_STR="${PANEL_SENSOR_COUNTS[*]}"
 
 # ================================
 # Phase 1: Install Dependencies

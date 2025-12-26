@@ -71,7 +71,7 @@ else
 fi
 
 # Generate and import custom configuration
-if [ -n "$PANEL_COUNT" ] && [ -n "$SENSORS_PER_PANEL" ]; then
+if [ -n "$PANEL_COUNT" ] && [ -n "$PANEL_SENSOR_COUNTS_STR" ]; then
   log "Generating custom database configuration..."
   CUSTOM_SQL_FILE="/tmp/custom-db-config.sql"
 
@@ -84,7 +84,7 @@ if [ -n "$PANEL_COUNT" ] && [ -n "$SENSORS_PER_PANEL" ]; then
     exit 1
   fi
 
-  source "$GENERATE_SCRIPT" "$APP_NAME" "$PANEL_COUNT" "$SENSORS_PER_PANEL" "$CUSTOM_SQL_FILE"
+  source "$GENERATE_SCRIPT" "$APP_NAME" "$PANEL_COUNT" "$PANEL_SENSOR_COUNTS_STR" "$CUSTOM_SQL_FILE"
 
   log "Importing custom configuration..."
   mysql -u root -p"${MYSQL_ROOT_PASS}" "${DB_NAME}" < "$CUSTOM_SQL_FILE"

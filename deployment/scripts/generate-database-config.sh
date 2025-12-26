@@ -8,18 +8,23 @@ set -e
 
 APP_NAME=$1
 PANEL_COUNT=$2
-SENSORS_PER_PANEL=$3
+PANEL_SENSOR_COUNTS_STR=$3
 OUTPUT_FILE=$4
 
-if [ -z "$APP_NAME" ] || [ -z "$PANEL_COUNT" ] || [ -z "$SENSORS_PER_PANEL" ] || [ -z "$OUTPUT_FILE" ]; then
-  error "Usage: generate-database-config.sh <app_name> <panel_count> <sensors_per_panel> <output_file>"
+if [ -z "$APP_NAME" ] || [ -z "$PANEL_COUNT" ] || [ -z "$PANEL_SENSOR_COUNTS_STR" ] || [ -z "$OUTPUT_FILE" ]; then
+  error "Usage: generate-database-config.sh <app_name> <panel_count> <panel_sensor_counts> <output_file>"
   exit 1
 fi
+
+# Convert space-separated string to array
+read -ra PANEL_SENSOR_COUNTS <<< "$PANEL_SENSOR_COUNTS_STR"
 
 log "Generating database configuration..."
 log "  Application name: ${APP_NAME}"
 log "  Panel count: ${PANEL_COUNT}"
-log "  Sensors per panel: ${SENSORS_PER_PANEL}"
+for ((i=1; i<=PANEL_COUNT; i++)); do
+  log "  Panel ${i}: ${PANEL_SENSOR_COUNTS[$((i-1))]} sensors"
+done
 
 # Create SQL file
 cat > "$OUTPUT_FILE" << 'EOF'
@@ -62,16 +67,23 @@ echo -e "$PANEL_VALUES" >> "$OUTPUT_FILE"
 echo "" >> "$OUTPUT_FILE"
 
 # Generate Sensor inserts
-log "Generating Sensor configuration (${SENSORS_PER_PANEL} sensors per panel)..."
+log "Generating Sensor configuration..."
 echo "-- Insert Sensors" >> "$OUTPUT_FILE"
 echo "INSERT INTO \`Sensor\` (\`id\`, \`name\`, \`horn\`, \`address\`, \`panelId\`) VALUES" >> "$OUTPUT_FILE"
 
 SENSOR_ID=1
 SENSOR_VALUES=""
-TOTAL_SENSORS=$((PANEL_COUNT * SENSORS_PER_PANEL))
+TOTAL_SENSORS=0
+
+# Calculate total sensors
+for ((i=0; i<PANEL_COUNT; i++)); do
+  TOTAL_SENSORS=$((TOTAL_SENSORS + PANEL_SENSOR_COUNTS[i]))
+done
 
 for ((panel_id=1; panel_id<=PANEL_COUNT; panel_id++)); do
-  for ((sensor_addr=1; sensor_addr<=SENSORS_PER_PANEL; sensor_addr++)); do
+  SENSORS_FOR_THIS_PANEL=${PANEL_SENSOR_COUNTS[$((panel_id-1))]}
+
+  for ((sensor_addr=1; sensor_addr<=SENSORS_FOR_THIS_PANEL; sensor_addr++)); do
     SENSOR_NAME="Sensor ${sensor_addr}"
 
     if [ $SENSOR_ID -eq $TOTAL_SENSORS ]; then
@@ -90,4 +102,4 @@ echo "" >> "$OUTPUT_FILE"
 
 log "Database configuration generated: ${OUTPUT_FILE}"
 log "  Total panels: ${PANEL_COUNT}"
-log "  Total sensors: ${TOTAL_SENSORS} (${SENSORS_PER_PANEL} per panel)"
+log "  Total sensors: ${TOTAL_SENSORS}"
