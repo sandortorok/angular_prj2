@@ -26,17 +26,17 @@ cat > "$OUTPUT_FILE" << 'EOF'
 -- Custom Generated Database Configuration
 
 -- Clear existing data (respecting foreign key constraints)
--- Delete child tables first
-DELETE FROM SensorHistory;
-DELETE FROM Sensor;
-DELETE FROM Panel;
-DELETE FROM Siren;
+-- Delete in correct order: child tables first, then parents
+DELETE FROM SensorHistory;  -- References Sensor
+DELETE FROM Siren;          -- References Panel
+DELETE FROM Sensor;         -- References Panel
+DELETE FROM Panel;          -- No dependencies
 
 -- Reset auto-increment
 ALTER TABLE SensorHistory AUTO_INCREMENT = 1;
+ALTER TABLE Siren AUTO_INCREMENT = 1;
 ALTER TABLE Sensor AUTO_INCREMENT = 1;
 ALTER TABLE Panel AUTO_INCREMENT = 1;
-ALTER TABLE Siren AUTO_INCREMENT = 1;
 
 EOF
 
