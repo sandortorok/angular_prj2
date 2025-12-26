@@ -207,11 +207,11 @@ function randomIntFromInterval(min: number, max: number) {
 }
 function ppmConvert(val) {
   if (val != 0) {
-    let ppm_val = (val * 5) / 1024;
-    ppm_val = Math.pow(10, ppm_val - 2.99) - 0.2;
-    ppm_val = Math.round(ppm_val * 100) / 100; //2 digit;
+    let voltage = (val * 5) / 1024;
+    let ppm_val = 0.399 * Math.pow(10, 0.7158 * voltage);
+    ppm_val = Math.round(ppm_val * 100) / 100;
     if (ppm_val <= 0) {
-      ppm_val = 0.01;
+        ppm_val = 0.01;
     }
     return ppm_val;
   } else {
