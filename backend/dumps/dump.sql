@@ -50,6 +50,7 @@ CREATE TABLE `Panel` (
   `id` int NOT NULL AUTO_INCREMENT,
   `path` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
   `address` int NOT NULL,
+  `name` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `Panel_address_key` (`address`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -61,7 +62,7 @@ CREATE TABLE `Panel` (
 
 LOCK TABLES `Panel` WRITE;
 /*!40000 ALTER TABLE `Panel` DISABLE KEYS */;
-INSERT INTO `Panel` VALUES (1,'',2),(2,'',1);
+INSERT INTO `Panel` VALUES (1,'',2,NULL),(2,'',1,NULL);
 /*!40000 ALTER TABLE `Panel` ENABLE KEYS */;
 UNLOCK TABLES;
 
