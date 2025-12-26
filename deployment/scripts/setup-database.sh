@@ -76,7 +76,8 @@ if [ -n "$PANEL_COUNT" ] && [ -n "$SENSORS_PER_PANEL" ]; then
   CUSTOM_SQL_FILE="/tmp/custom-db-config.sql"
 
   # Source the generate script
-  source "$(dirname "$0")/generate-database-config.sh" "$APP_NAME" "$PANEL_COUNT" "$SENSORS_PER_PANEL" "$CUSTOM_SQL_FILE"
+  SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+  source "${SCRIPT_DIR}/generate-database-config.sh" "$APP_NAME" "$PANEL_COUNT" "$SENSORS_PER_PANEL" "$CUSTOM_SQL_FILE"
 
   log "Importing custom configuration..."
   mysql -u root -p"${MYSQL_ROOT_PASS}" "${DB_NAME}" < "$CUSTOM_SQL_FILE"

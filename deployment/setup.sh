@@ -245,9 +245,14 @@ if [[ ! $REPLY =~ ^[Yy]$ ]]; then
   exit 1
 fi
 
-# Generate MySQL root password
-MYSQL_ROOT_PASS=$(openssl rand -base64 16 2>/dev/null || date +%s | sha256sum | base64 | head -c 16)
-info "Generated MySQL root password (stored in /root/.mysql_deployment_credentials)"
+# Generate or reuse MySQL root password
+if [ -f "/root/.mysql_deployment_credentials" ]; then
+  MYSQL_ROOT_PASS=$(cat /root/.mysql_deployment_credentials)
+  info "Reusing existing MySQL root password from /root/.mysql_deployment_credentials"
+else
+  MYSQL_ROOT_PASS=$(openssl rand -base64 16 2>/dev/null || date +%s | sha256sum | base64 | head -c 16)
+  info "Generated new MySQL root password (will be stored in /root/.mysql_deployment_credentials)"
+fi
 
 # Check for existing installation
 FORCE_FRONTEND_REBUILD=false
