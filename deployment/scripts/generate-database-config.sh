@@ -88,26 +88,6 @@ done
 echo -e "$SENSOR_VALUES" >> "$OUTPUT_FILE"
 echo "" >> "$OUTPUT_FILE"
 
-# Generate Siren inserts (optional - 1 siren per panel by default)
-log "Generating Siren configuration (1 siren per panel)..."
-echo "-- Insert Sirens" >> "$OUTPUT_FILE"
-echo "INSERT INTO \`Siren\` (\`id\`, \`address\`, \`panelId\`) VALUES" >> "$OUTPUT_FILE"
-
-SIREN_VALUES=""
-for ((i=1; i<=PANEL_COUNT; i++)); do
-  SIREN_ADDRESS=$i
-
-  if [ $i -eq $PANEL_COUNT ]; then
-    SIREN_VALUES="${SIREN_VALUES}(${i}, ${SIREN_ADDRESS}, ${i});"
-  else
-    SIREN_VALUES="${SIREN_VALUES}(${i}, ${SIREN_ADDRESS}, ${i}),\n"
-  fi
-done
-
-echo -e "$SIREN_VALUES" >> "$OUTPUT_FILE"
-echo "" >> "$OUTPUT_FILE"
-
 log "Database configuration generated: ${OUTPUT_FILE}"
 log "  Total panels: ${PANEL_COUNT}"
 log "  Total sensors: ${TOTAL_SENSORS} (${SENSORS_PER_PANEL} per panel)"
-log "  Total sirens: ${PANEL_COUNT}"
