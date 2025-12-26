@@ -64,7 +64,7 @@ echo "" >> "$OUTPUT_FILE"
 # Generate Sensor inserts
 log "Generating Sensor configuration (${SENSORS_PER_PANEL} sensors per panel)..."
 echo "-- Insert Sensors" >> "$OUTPUT_FILE"
-echo "INSERT INTO \`Sensor\` (\`id\`, \`name\`, \`status\`, \`address\`, \`panelId\`) VALUES" >> "$OUTPUT_FILE"
+echo "INSERT INTO \`Sensor\` (\`id\`, \`name\`, \`horn\`, \`address\`, \`panelId\`) VALUES" >> "$OUTPUT_FILE"
 
 SENSOR_ID=1
 SENSOR_VALUES=""
