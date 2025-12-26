@@ -43,7 +43,7 @@ EOF
 # Generate Panel inserts
 log "Generating Panel configuration..."
 echo "-- Insert Panels" >> "$OUTPUT_FILE"
-echo "INSERT INTO \`Panel\` (\`id\`, \`name\`, \`address\`) VALUES" >> "$OUTPUT_FILE"
+echo "INSERT INTO \`Panel\` (\`id\`, \`path\`, \`address\`, \`name\`) VALUES" >> "$OUTPUT_FILE"
 
 PANEL_VALUES=""
 for ((i=1; i<=PANEL_COUNT; i++)); do
@@ -52,9 +52,9 @@ for ((i=1; i<=PANEL_COUNT; i++)); do
 
   if [ $i -eq $PANEL_COUNT ]; then
     # Last panel - no comma
-    PANEL_VALUES="${PANEL_VALUES}(${i}, '${PANEL_NAME}', ${PANEL_ADDRESS});"
+    PANEL_VALUES="${PANEL_VALUES}(${i}, '', ${PANEL_ADDRESS}, '${PANEL_NAME}');"
   else
-    PANEL_VALUES="${PANEL_VALUES}(${i}, '${PANEL_NAME}', ${PANEL_ADDRESS}),\n"
+    PANEL_VALUES="${PANEL_VALUES}(${i}, '', ${PANEL_ADDRESS}, '${PANEL_NAME}'),\n"
   fi
 done
 
