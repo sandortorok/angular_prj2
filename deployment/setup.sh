@@ -90,7 +90,10 @@ trap 'error "Script failed at line $LINENO. Check $LOG_FILE for details."' ERR
 # ================================
 # Banner
 # ================================
-clear
+# Clear screen only if running in interactive terminal
+if [ -t 0 ]; then
+  clear
+fi
 cat << "EOF"
 ╔═══════════════════════════════════════════════════════════╗
 ║                                                           ║

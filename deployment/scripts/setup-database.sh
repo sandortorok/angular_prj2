@@ -22,10 +22,11 @@ log "Setting up MySQL database..."
 if [ ! -f /root/.mysql_deployment_credentials ]; then
   log "Securing MariaDB installation..."
 
-  # Set root password
+  # Set root password (try different methods, if all fail it means root already has a password)
   mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '${MYSQL_ROOT_PASS}';" 2>/dev/null || \
     mysql -e "SET PASSWORD FOR 'root'@'localhost' = PASSWORD('${MYSQL_ROOT_PASS}');" 2>/dev/null || \
-    mysqladmin -u root password "${MYSQL_ROOT_PASS}" 2>/dev/null
+    mysqladmin -u root password "${MYSQL_ROOT_PASS}" 2>/dev/null || \
+    warning "Could not set MySQL root password (may already be set)"
 
   # Remove anonymous users
   mysql -u root -p"${MYSQL_ROOT_PASS}" -e "DELETE FROM mysql.user WHERE User='';" 2>/dev/null || true
