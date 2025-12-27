@@ -134,16 +134,25 @@ if [ -n "$CURRENT_USER" ] && [ "$CURRENT_USER" != "root" ]; then
   chown -R "${CURRENT_USER}:${CURRENT_USER}" /var/log/pm2
 fi
 
-# Stop existing PM2 process if running
-pm2 delete iot-backend 2>/dev/null || true
+# Determine which user should run PM2
+CURRENT_USER=${SUDO_USER:-${USER}}
+if [ -z "$CURRENT_USER" ] || [ "$CURRENT_USER" = "root" ]; then
+  error "Cannot run PM2 as root. Please run deployment with sudo, not as root user."
+  exit 1
+fi
 
-# Start backend with PM2
-log "Starting backend with PM2..."
+# Stop existing PM2 processes (both root and user)
+log "Stopping existing PM2 processes..."
+pm2 delete all 2>/dev/null || true
+sudo -u "${CURRENT_USER}" pm2 delete all 2>/dev/null || true
+
+# Start backend with PM2 as the current user
+log "Starting backend with PM2 as user: ${CURRENT_USER}..."
 cd "${BACKEND_PATH}"
-pm2 start ecosystem.config.js
+sudo -u "${CURRENT_USER}" pm2 start ecosystem.config.js
 
-# Save PM2 process list
-pm2 save
+# Save PM2 process list for the user
+sudo -u "${CURRENT_USER}" pm2 save
 
 # Setup PM2 startup script for systemd
 log "Configuring PM2 to start on boot..."
