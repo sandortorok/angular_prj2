@@ -1,5 +1,6 @@
 import { Component, Input, OnInit, SimpleChanges } from '@angular/core';
 import Chart from 'chart.js/auto';
+import { yellowMin, redMin } from '../pages/sensors/sensor.model';
 
 @Component({
     selector: 'app-gauge-chart',
@@ -48,7 +49,10 @@ export class GaugeChartComponent implements OnInit {
         ctx.restore();
         ctx.font = '50px sans-serif';
         ctx.fillStyle = '#444';
-        ctx.fillText(needleValue + ' ppm', cx - 100, cy + 60);
+        const displayText = needleValue !== undefined && needleValue !== null
+          ? needleValue + ' ppm'
+          : 'Nincs adat';
+        ctx.fillText(displayText, cx - 100, cy + 60);
         // ctx.textAlign = 'center';
       },
     };
@@ -61,7 +65,7 @@ export class GaugeChartComponent implements OnInit {
         datasets: [
           {
             label: 'Határérték',
-            data: [20, 30, 50],
+            data: [yellowMin, redMin - yellowMin, 100 - redMin],
             backgroundColor: [
               'rgba(0,255,0,0.3)',
               'rgba(255,255,0,0.3)',
